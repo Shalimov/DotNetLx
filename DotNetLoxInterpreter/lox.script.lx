@@ -1,0 +1,7 @@
+class SomeName {
+    fun init() {
+        this.name = "John";
+        this.age = 18;
+        this.yob = 1992;
+    }
+}
