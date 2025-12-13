@@ -59,6 +59,8 @@ public class Scanner(string source)
             case '-': AddToken(TokenType.MINUS); break;
             case '+': AddToken(TokenType.PLUS); break;
             case '*': AddToken(TokenType.STAR); break;
+            case '?': AddToken(TokenType.QUESTION_MARK); break;
+            case ':': AddToken(TokenType.COLON); break;
 
             case '"':
                 ExtractStringLiteral();
@@ -128,7 +130,7 @@ public class Scanner(string source)
     private bool Match(char character)
     {
         if (IsAtEnd()) return false;
-        if (_source[_current] != character) return true;
+        if (_source[_current] != character) return false;
 
         _current++;
         return true;
@@ -152,7 +154,7 @@ public class Scanner(string source)
 
     private void ExtractStringLiteral()
     {
-        while (Peek() != '"' && !IsAtEnd())
+        while (!IsAtEnd() && Peek() != '"')
         {
             if (Peek() == '\n')
             {
@@ -173,8 +175,8 @@ public class Scanner(string source)
         // Close string here
         Advance();
 
-        // Take the literal without quotes
-        AddToken(TokenType.STRING, _source.Substring(_start + 1, _current - _start));
+        // Take the literal without quotes (_start + 1 discards a starting quote, _current - 1 an ending one)
+        AddToken(TokenType.STRING, _source.Substring(_start + 1, _current - 1 - (_start + 1)));
     }
 
     private void ExtractIdentifier()

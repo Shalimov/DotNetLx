@@ -12,6 +12,7 @@ var output = args[0];
 File.WriteAllText(
     output,
     Generator.DeclareAst("Expr", [
+        "Ternary : Expr left, Token op1, Expr mid, Token op2, Expr right",
         "Binary : Expr left, Token op, Expr right",
         "Grouping : Expr expr",
         "Literal : Object value",

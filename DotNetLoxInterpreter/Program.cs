@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using DotNetLoxInterpreter.LitterVisitors;
 
 namespace DotNetLoxInterpreter;
 
@@ -60,7 +61,12 @@ public static class DotnetLox
         var scanner = new Scanner(script);
         var tokens = scanner.Scan();
 
-        foreach (var token in tokens) Console.WriteLine(token);
+        var parser = new Parser(tokens.ToArray());
+        var parsedExpression = parser.Parse();
+
+        var astPrinter = new AstPrinter();
+
+        Console.WriteLine(astPrinter.Print(parsedExpression));
     }
 
     public static void ReportError(int line, int col, string message)
@@ -68,8 +74,21 @@ public static class DotnetLox
         ReportError(line, col, message, "");
     }
 
+    public static void ReportError(Token token, string message)
+    {
+        if (token.Type == TokenType.EOF)
+        {
+            ReportError(token.Line, token.Column, message, " at end");
+        }
+        else
+        {
+            ReportError(token.Line, token.Column, message, $"at '{token.Lexeme}'");
+        }
+    }
+
     private static void ReportError(int line, int col, string message, string where)
     {
+
         var report = string.IsNullOrEmpty(where)
             ? $"[line {line}; col {col}] Error: {message}"
             : $"[line {line}; col {col}] Error {where}: {message}";

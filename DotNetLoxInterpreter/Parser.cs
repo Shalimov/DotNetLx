@@ -1,0 +1,278 @@
+using System;
+using System.Data;
+
+namespace DotNetLoxInterpreter;
+
+public class Parser
+{
+  public class ParseException(string msg) : SyntaxErrorException(msg)
+  {
+
+  }
+
+  private readonly Token[] _tokens;
+  private int _current = 0;
+
+  public Parser(Token[] tokens)
+  {
+    _tokens = tokens;
+  }
+
+  public Expr? Parse()
+  {
+    try
+    {
+      return Expression();
+    }
+    catch (ParseException)
+    {
+      return null;
+    }
+  }
+
+  #region Descent Parsing
+
+  // expression     
+  // ternary        → commaseq ("?" ternary ":" ternary)? ;
+  // commaseq       → equality ( "," equality )* ;
+  // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+  // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+  // term           → factor ( ( "-" | "+" ) factor )* ;
+  // factor         → unary ( ( "/" | "*" ) unary )* ;
+  // unary          → ( "!" | "-" ) unary | primary ;
+  // primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+
+  private Expr Expression()
+  {
+    return Commaseq();
+  }
+
+  private Expr Commaseq()
+  {
+    var leadingExpr = Ternary();
+
+    while (Match(TokenType.COMMA))
+    {
+      var token = Previous();
+      var trailingExpr = Ternary();
+
+      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr Ternary()
+  {
+    var leadingExpr = Equality();
+
+    if (Match(TokenType.QUESTION_MARK))
+    {
+      var questionToken = Previous();
+      var midExpr = Ternary();
+      var colonToken = Consume(TokenType.COLON, "Expected a complete ternary operator, but ':' is not find.");
+      var tailingExpr = Ternary();
+
+      leadingExpr = new Expr.Ternary(leadingExpr, questionToken, midExpr, colonToken, tailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr Equality()
+  {
+    var leadingExpr = Comparison();
+
+    while (Match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL))
+    {
+      var token = Previous();
+      var trailingExpr = Comparison();
+
+      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr Comparison()
+  {
+    var leadingExpr = Term();
+
+    while (Match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL))
+    {
+      var token = Previous();
+      var trailingExpr = Term();
+
+      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr Term()
+  {
+    var leadingExpr = Factor();
+
+    while (Match(TokenType.MINUS, TokenType.PLUS))
+    {
+      var token = Previous();
+      var trailingExpr = Factor();
+
+      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr Factor()
+  {
+    var leadingExpr = Unary();
+
+    while (Match(TokenType.SLASH, TokenType.STAR))
+    {
+      var token = Previous();
+      var trailingExpr = Unary();
+
+      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  // Original grammar:
+  // unary -> ( "!" | "-" ) unary | primary ;
+  // is modified to catch cases with more binary operators like:
+  // unary -> ( "!" | "-" | "+" | "*" | "/" ) unary | primary ;
+  // but we report an error when preceding operator is not "!" or "-"
+  private Expr Unary()
+  {
+    if (Match(TokenType.BANG, TokenType.MINUS))
+    {
+      var token = Previous();
+      var trailingExpr = Unary();
+
+      return new Expr.Unary(token, trailingExpr);
+    } 
+    else if (Match(TokenType.PLUS, TokenType.SLASH, TokenType.STAR))
+    {
+      var token = Previous();
+
+      throw Error(token, $"Unary operator '{token.Lexeme}' is not supported.");
+    }
+
+    return Primary();
+  }
+
+  private Expr Primary()
+  {
+    if (Match(TokenType.FALSE)) return new Expr.Literal(false);
+    if (Match(TokenType.TRUE)) return new Expr.Literal(true);
+    if (Match(TokenType.NIL)) return new Expr.Literal(null!);
+
+    if (Match(TokenType.NUMBER, TokenType.STRING))
+    {
+      var token = Previous();
+      return new Expr.Literal(token.Literal!);
+    }
+
+    if (Match(TokenType.LEFT_PAREN))
+    {
+      var leadingExpr = Expression();
+      Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+
+      return new Expr.Grouping(leadingExpr);
+    }
+
+    throw Error(Peek(), "Expression is expected.");
+  }
+
+  #endregion
+
+  #region Sync
+
+  /*
+    Synchronization is really important part of the parsing process
+    When an error occures we try our best to get to the next valid expression to keep on parsing.
+    It suppose to work because we unwind the stack of call frames to the parser's state
+    we consider safe. It happens with throwing exception and catching it at the level of "safe" language construction.
+
+    It helps to achieve a tradeoff where we avoid cascading errors (being inside incorrect state and keep on parsing)
+    and check whether we have anything ahead that is worth to report.
+  */
+  private void Synchronize()
+  {
+    Advance();
+
+    while (!IsAtEnd())
+    {
+      if (Previous().Type == TokenType.SEMICOLON) return;
+
+      switch (Peek().Type)
+      {
+        case TokenType.CLASS:
+        case TokenType.IF:
+        case TokenType.FOR:
+        case TokenType.WHILE:
+        case TokenType.VAR:
+        case TokenType.FUN:
+        case TokenType.RETURN:
+        case TokenType.PRINT:
+          return;
+      }
+
+      Advance();
+    }
+  }
+
+  #endregion
+
+  #region Helpers
+
+  private Token Consume(TokenType token, string rejectionReason)
+  {
+    if (Check(token)) return Advance();
+
+    throw Error(Peek(), rejectionReason);
+  }
+
+  private bool Match(params TokenType[] tokenTypes)
+  {
+    if (tokenTypes.Any(Check))
+    {
+      Advance();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  private Token Peek() => _tokens[_current];
+
+  private Token Previous() => _tokens[_current - 1];
+
+  private Token Advance()
+  {
+    if (!IsAtEnd()) _current++;
+
+    return Previous();
+  }
+
+  private ParseException Error(Token stopToken, string message)
+  {
+    DotnetLox.ReportError(stopToken, message);
+
+    return new ParseException(message);
+  }
+
+  private bool Check(TokenType tokenType)
+  {
+    if (IsAtEnd()) return false;
+
+    return Peek().Type == tokenType;
+  }
+
+  private bool IsAtEnd() => Peek().Type == TokenType.EOF;
+
+  #endregion
+}

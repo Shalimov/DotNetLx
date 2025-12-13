@@ -4,10 +4,34 @@ namespace DotNetLoxInterpreter
     {
         public interface IVisitor<out TR>
         {
+            public TR Visit(Ternary expr);
             public TR Visit(Binary expr);
             public TR Visit(Grouping expr);
             public TR Visit(Literal expr);
             public TR Visit(Unary expr);
+        }
+
+        public class Ternary : Expr
+        {
+            public Expr Left { get; set; }
+            public Token Op1 { get; set; }
+            public Expr Mid { get; set; }
+            public Token Op2 { get; set; }
+            public Expr Right { get; set; }
+
+            public Ternary(Expr left, Token op1, Expr mid, Token op2, Expr right)
+            {
+                Left = left;
+                Op1 = op1;
+                Mid = mid;
+                Op2 = op2;
+                Right = right;
+            }
+
+            public override TR Accept<TR>(IVisitor<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
         }
 
         public class Binary : Expr
