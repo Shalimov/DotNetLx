@@ -1,15 +1,9 @@
-using System;
-using System.Data;
+using DotNetLoxInterpreter.Exceptions;
 
 namespace DotNetLoxInterpreter;
 
 public class Parser
 {
-  public class ParseException(string msg) : SyntaxErrorException(msg)
-  {
-
-  }
-
   private readonly Token[] _tokens;
   private int _current = 0;
 
@@ -18,29 +12,50 @@ public class Parser
     _tokens = tokens;
   }
 
-  public Expr? Parse()
+  public List<Stmt> Parse()
   {
-    try
+    var statements = new List<Stmt>();
+
+    while(!IsAtEnd())
     {
-      return Expression();
+      statements.Add(Statement());
     }
-    catch (ParseException)
-    {
-      return null;
-    }
+
+    return statements;
   }
 
-  #region Descent Parsing
+  #region Descent Parsing of Statements
 
-  // expression     
-  // ternary        → commaseq ("?" ternary ":" ternary)? ;
-  // commaseq       → equality ( "," equality )* ;
-  // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-  // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-  // term           → factor ( ( "-" | "+" ) factor )* ;
-  // factor         → unary ( ( "/" | "*" ) unary )* ;
-  // unary          → ( "!" | "-" ) unary | primary ;
-  // primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+
+  private Stmt Statement()
+  {
+    if (Match(TokenType.PRINT))
+    {
+      return PrintStmt();
+    }
+
+    return ExprStmt();
+  }
+
+  private Stmt ExprStmt()
+  {
+    var expression = Expression();
+    Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+
+    return new Stmt.Expression(expression);
+  }
+
+  private Stmt PrintStmt()
+  {
+    var value = Expression();
+    Consume(TokenType.SEMICOLON, "Expect ';' after value.");
+
+    return new Stmt.Print(value);
+  }
+
+  #endregion
+
+  #region Descent Parsing Of Expressions
 
   private Expr Expression()
   {
@@ -156,6 +171,9 @@ public class Parser
     else if (Match(TokenType.PLUS, TokenType.SLASH, TokenType.STAR))
     {
       var token = Previous();
+      // Go deeper without throwing error right away
+      // to provide better error reporting and in addition skip unnecessary tokens
+      _ = Unary(); 
 
       throw Error(token, $"Unary operator '{token.Lexeme}' is not supported.");
     }
@@ -258,11 +276,11 @@ public class Parser
     return Previous();
   }
 
-  private ParseException Error(Token stopToken, string message)
+  private LxParseException Error(Token stopToken, string message)
   {
     DotnetLox.ReportError(stopToken, message);
 
-    return new ParseException(message);
+    return new LxParseException(message, stopToken);
   }
 
   private bool Check(TokenType tokenType)

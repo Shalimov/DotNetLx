@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using DotNetLoxInterpreter.LitterVisitors;
+using DotNetLoxInterpreter.Exceptions;
 
 namespace DotNetLoxInterpreter;
 
@@ -7,8 +7,11 @@ public static class DotnetLox
 {
     private const int ExWrongUsage = 64;
     private const int ExData = 65;
+    private const int ExSoftware = 70;
 
+    private static readonly Interpreter Interpreter = new Interpreter();
     private static bool HasError { get; set; }
+    private static bool HasRuntimeError { get; set;}
 
     public static int Main(params string[] args)
     {
@@ -26,6 +29,7 @@ public static class DotnetLox
             RunFile(args[0]);
 
             if (HasError) return ExData;
+            if (HasRuntimeError) return ExSoftware;
         }
         else
         {
@@ -53,6 +57,7 @@ public static class DotnetLox
             Run(scriptLine);
 
             HasError = false;
+            HasRuntimeError = false;
         } while (true);
     }
 
@@ -62,11 +67,16 @@ public static class DotnetLox
         var tokens = scanner.Scan();
 
         var parser = new Parser(tokens.ToArray());
-        var parsedExpression = parser.Parse();
+        var statements = parser.Parse();
 
-        var astPrinter = new AstPrinter();
+        Interpreter.Interpret(statements);
+    }
 
-        Console.WriteLine(astPrinter.Print(parsedExpression));
+    public static void RuntimeError(LxRuntimeException exception)
+    {
+        ReportError(exception.Token.Line, exception.Token.Column, exception.Message);
+
+        HasRuntimeError = true;
     }
 
     public static void ReportError(int line, int col, string message)

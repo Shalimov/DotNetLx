@@ -1,7 +1,5 @@
-class SomeName {
-    fun init() {
-        this.name = "John";
-        this.age = 18;
-        this.yob = 1992;
-    }
-}
+print "lox is a lang";
+print 1 + 2 * 3 / 4;
+print true;
+print false;
+print nil;

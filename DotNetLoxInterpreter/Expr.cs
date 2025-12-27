@@ -1,8 +1,9 @@
+/* IMPORTANT: Generated Code Do Not Amend */
 namespace DotNetLoxInterpreter
 {
     public abstract class Expr
     {
-        public interface IVisitor<out TR>
+        public interface IVisitorExpr<out TR>
         {
             public TR Visit(Ternary expr);
             public TR Visit(Binary expr);
@@ -28,7 +29,7 @@ namespace DotNetLoxInterpreter
                 Right = right;
             }
 
-            public override TR Accept<TR>(IVisitor<TR> visitor)
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
             {
                 return visitor.Visit(this);
             }
@@ -47,7 +48,7 @@ namespace DotNetLoxInterpreter
                 Right = right;
             }
 
-            public override TR Accept<TR>(IVisitor<TR> visitor)
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
             {
                 return visitor.Visit(this);
             }
@@ -62,7 +63,7 @@ namespace DotNetLoxInterpreter
                 Expr = expr;
             }
 
-            public override TR Accept<TR>(IVisitor<TR> visitor)
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
             {
                 return visitor.Visit(this);
             }
@@ -77,7 +78,7 @@ namespace DotNetLoxInterpreter
                 Value = value;
             }
 
-            public override TR Accept<TR>(IVisitor<TR> visitor)
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
             {
                 return visitor.Visit(this);
             }
@@ -94,12 +95,12 @@ namespace DotNetLoxInterpreter
                 Right = right;
             }
 
-            public override TR Accept<TR>(IVisitor<TR> visitor)
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
             {
                 return visitor.Visit(this);
             }
         }
 
-        public abstract TR Accept<TR>(IVisitor<TR> visitor);
+        public abstract TR Accept<TR>(IVisitorExpr<TR> visitor);
     }
 }
