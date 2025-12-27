@@ -19,13 +19,21 @@ public static class Generator
         public required IEnumerable<ParsedProperty> Properties { get; set; }
     }
 
+    public static void DeclareAstInFile(string basePath, string baseClass, string[] definitions)
+    {
+        var output = Path.Combine(basePath, Path.ChangeExtension(baseClass, "cs"));
+
+        File.WriteAllText(output, DeclareAst(baseClass, definitions));
+    }
+
     public static string DeclareAst(string baseClass, string[] definitions)
     {
         var compilationUnit = CompilationUnit();
 
         compilationUnit = compilationUnit.AddMembers(
             NamespaceDeclaration(ParseName("DotNetLoxInterpreter"))
-                .AddMembers(CreateExprClassDeclaration(baseClass, definitions)));
+                .AddMembers(CreateExprClassDeclaration(baseClass, definitions))
+                .WithLeadingTrivia(Comment("/* IMPORTANT: Generated Code Do Not Amend */")));
 
         return compilationUnit.NormalizeWhitespace().ToFullString();
     }
@@ -40,26 +48,26 @@ public static class Generator
             .AddModifiers(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.AbstractKeyword))
-            .AddMembers(CreateVisitorInterface(subCls))
+            .AddMembers(CreateVisitorInterface(className, subCls))
             .AddMembers(subCls.Select(x => CreateSubClass(x, className)).ToArray<MemberDeclarationSyntax>())
             .AddMembers(
                 MethodDeclaration(ParseTypeName("TR"), "Accept")
                     .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.AbstractKeyword))
-                    .AddParameterListParameters(Parameter(Identifier("visitor")).WithType(ParseTypeName("IVisitor<TR>")))
+                    .AddParameterListParameters(Parameter(Identifier("visitor")).WithType(ParseTypeName($"IVisitor{className}<TR>")))
                     .AddTypeParameterListParameters(TypeParameter("TR"))
                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                 );
     }
 
 
-    private static InterfaceDeclarationSyntax CreateVisitorInterface(IEnumerable<ParsedDefinition> definitions)
+    private static InterfaceDeclarationSyntax CreateVisitorInterface(string baseClass, IEnumerable<ParsedDefinition> definitions)
     {
         var visitorMethodOverloads = definitions.Select(def => MethodDeclaration(ParseTypeName("TR"), "Visit")
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddParameterListParameters(Parameter(Identifier("expr")).WithType(ParseTypeName(def.ClassName)))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))).ToArray<MemberDeclarationSyntax>();
 
-        return InterfaceDeclaration("IVisitor")
+        return InterfaceDeclaration($"IVisitor{baseClass}")
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddTypeParameterListParameters(TypeParameter("TR").WithVarianceKeyword(Token(SyntaxKind.OutKeyword)))
             .AddMembers(visitorMethodOverloads);
@@ -80,7 +88,7 @@ public static class Generator
             .AddMembers(constructor)
             .AddMembers(MethodDeclaration(ParseTypeName("TR"), "Accept")
                 .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.OverrideKeyword))
-                .AddParameterListParameters(Parameter(Identifier("visitor")).WithType(ParseTypeName("IVisitor<TR>")))
+                .AddParameterListParameters(Parameter(Identifier("visitor")).WithType(ParseTypeName($"IVisitor{baseClassName}<TR>")))
                 .AddTypeParameterListParameters(TypeParameter("TR"))
                 .WithBody(Block(
                     ReturnStatement(

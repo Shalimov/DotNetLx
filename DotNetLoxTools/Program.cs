@@ -9,24 +9,17 @@ if (args.Length == 0 || args.Length > 1)
 
 var output = args[0];
 
-File.WriteAllText(
-    output,
-    Generator.DeclareAst("Expr", [
-        "Ternary : Expr left, Token op1, Expr mid, Token op2, Expr right",
-        "Binary : Expr left, Token op, Expr right",
-        "Grouping : Expr expr",
-        "Literal : Object value",
-        "Unary : Token op, Expr right"
-    ])
-);
+Generator.DeclareAstInFile(output, "Expr", [
+        "Ternary    : Expr left, Token op1, Expr mid, Token op2, Expr right",
+        "Binary     : Expr left, Token op, Expr right",
+        "Grouping   : Expr expr",
+        "Literal    : Object value",
+        "Unary      : Token op, Expr right"
+    ]);
 
-// Console.WriteLine(
-//     Generator.DeclareAst("Expr", [
-//         "Binary : Expr left, Token op, Expr right",
-//         "Grouping : Expr expr",
-//         "Literal : Object value",
-//         "Unary : Token op, Expr right"
-//     ])
-// );
+Generator.DeclareAstInFile(output, "Stmt", [
+        "Expression : Expr expr",
+        "Print      : Expr value"
+    ]);
 
 return 0;
