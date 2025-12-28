@@ -14,12 +14,14 @@ Generator.DeclareAstInFile(output, "Expr", [
         "Binary     : Expr left, Token op, Expr right",
         "Grouping   : Expr expr",
         "Literal    : Object value",
-        "Unary      : Token op, Expr right"
+        "Unary      : Token op, Expr right",
+        "Variable   : Token name"
     ]);
 
 Generator.DeclareAstInFile(output, "Stmt", [
         "Expression : Expr expr",
-        "Print      : Expr value"
+        "Print      : Expr value",
+        "Var        : Token name, Expr initializer"
     ]);
 
 return 0;

@@ -18,7 +18,8 @@ public class Parser
 
     while(!IsAtEnd())
     {
-      statements.Add(Statement());
+      // NOTE: Declaration might produce null statements that can be reject here
+      statements.Add(Declaration());
     }
 
     return statements;
@@ -26,6 +27,36 @@ public class Parser
 
   #region Descent Parsing of Statements
 
+  private Stmt Declaration()
+  {
+    try
+    {
+      if (Match(TokenType.VAR)) return VarDecl();
+
+      return Statement();
+    }
+    catch(LxParseException)
+    {
+      Synchronize();
+      // DotnetLox.ReportError(error.Token, error.Message);
+      return null;
+    }
+  }
+
+  private Stmt VarDecl()
+  {
+    var name = Consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+    Expr initializer = null!;
+
+    if (Match(TokenType.EQUAL))
+    {
+      initializer = Expression();
+    }
+
+    Consume(TokenType.SEMICOLON, "Expect ',' after variable declaration.");
+    return new Stmt.Var(name, initializer);
+  }
 
   private Stmt Statement()
   {
@@ -191,6 +222,12 @@ public class Parser
     {
       var token = Previous();
       return new Expr.Literal(token.Literal!);
+    }
+
+    if (Match(TokenType.IDENTIFIER))
+    {
+      var name = Previous();
+      return new Expr.Variable(name);
     }
 
     if (Match(TokenType.LEFT_PAREN))

@@ -1,18 +1,23 @@
-program        -> statement* EOF ; 
+program        -> declaration* EOF ; 
+
+declaration    -> varDecl
+                | statement ;
+
+varDecl        -> "var" IDENTIFIER ( "=" expresion )? ";" ;
 
 statement      -> exprStmt
                 | printStmt ;
 
-printStmt      -> "print" expression ";"
-exprStmt       -> expresion ";"
+printStmt      -> "print" expression ";" ;
+exprStmt       -> expresion ";" ;
 
 expression     -> ternary ;
 
-ternary        -> commaseq ("?" ternary ":" ternary)? ;
+ternary        -> commaseq ( "?" ternary ":" ternary )? ;
 commaseq       -> equality ( "," equality )* ;
 equality       -> comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           -> factor ( ( "-" | "+" ) factor )* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
 unary          -> ( "!" | "-" ) unary | primary ;
-primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;

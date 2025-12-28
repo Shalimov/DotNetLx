@@ -10,6 +10,7 @@ namespace DotNetLoxInterpreter
             public TR Visit(Grouping expr);
             public TR Visit(Literal expr);
             public TR Visit(Unary expr);
+            public TR Visit(Variable expr);
         }
 
         public class Ternary : Expr
@@ -93,6 +94,21 @@ namespace DotNetLoxInterpreter
             {
                 Op = op;
                 Right = right;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Variable : Expr
+        {
+            public Token Name { get; set; }
+
+            public Variable(Token name)
+            {
+                Name = name;
             }
 
             public override TR Accept<TR>(IVisitorExpr<TR> visitor)

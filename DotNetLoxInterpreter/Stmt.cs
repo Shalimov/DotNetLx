@@ -7,6 +7,7 @@ namespace DotNetLoxInterpreter
         {
             public TR Visit(Expression expr);
             public TR Visit(Print expr);
+            public TR Visit(Var expr);
         }
 
         public class Expression : Stmt
@@ -31,6 +32,23 @@ namespace DotNetLoxInterpreter
             public Print(Expr value)
             {
                 Value = value;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Var : Stmt
+        {
+            public Token Name { get; set; }
+            public Expr Initializer { get; set; }
+
+            public Var(Token name, Expr initializer)
+            {
+                Name = name;
+                Initializer = initializer;
             }
 
             public override TR Accept<TR>(IVisitorStmt<TR> visitor)
