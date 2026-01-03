@@ -1,0 +1,11 @@
+print "lox is a lang";
+print 1 + 2 * 3 / 4;
+print true;
+print false;
+print nil;
+
+var a = 1;
+var b = 2 + a;
+var c = "__hello-world__";
+
+print a + c + b;

@@ -6,12 +6,21 @@ namespace DotNetLoxInterpreter;
 
 public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueType>
 {
+  private Environment _environment = new();
+
   #region Statement Visits
+
+  public ValueType Visit(Stmt.Block block)
+  {
+    ExecuteBlock(block.Statements, new Environment(_environment));
+
+    return default!;
+  }
 
   public ValueType Visit(Stmt.Expression expr)
   {
     Evaluate(expr.Expr);
-    
+
     return default!;
   }
 
@@ -19,6 +28,21 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
   {
     var evaluatedValue = Evaluate(expr.Value);
     Console.Out.WriteLine(Stringify(evaluatedValue));
+
+    return default!;
+  }
+
+  public ValueType Visit(Stmt.Var expr)
+  {
+
+    object? value = null;
+
+    if (expr.Initializer is not null)
+    {
+      value = Evaluate(expr.Initializer);
+    }
+
+    _environment.Define(expr.Name.Lexeme, value);
 
     return default!;
   }
@@ -161,6 +185,19 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
     return null;
   }
 
+  public object? Visit(Expr.Variable expr)
+  {
+    return _environment.Get(expr.Name);
+  }
+
+  public object? Visit(Expr.Assign expr)
+  {
+    var value = Evaluate(expr.Value);
+    _environment.Assign(expr.Name, value);
+
+    return value;
+  }
+
   #endregion
 
   public void Interpret(List<Stmt> stmts)
@@ -214,6 +251,25 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
   private object? Evaluate(Expr expr)
   {
     return expr.Accept(this);
+  }
+
+  private void ExecuteBlock(List<Stmt> stmts, Environment environment)
+  {
+    var previousEnv = _environment;
+
+    try
+    {
+      _environment = environment;
+
+      foreach (var stmt in stmts)
+      {
+        Execute(stmt);
+      }
+    }
+    finally
+    {
+      _environment = previousEnv;
+    }
   }
 
   private void Execute(Stmt stmt)

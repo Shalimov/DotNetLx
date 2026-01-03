@@ -15,10 +15,12 @@ Generator.DeclareAstInFile(output, "Expr", [
         "Grouping   : Expr expr",
         "Literal    : Object value",
         "Unary      : Token op, Expr right",
-        "Variable   : Token name"
+        "Variable   : Token name",
+        "Assign     : Token name, Expr value"
     ]);
 
 Generator.DeclareAstInFile(output, "Stmt", [
+        "Block      : List<Stmt> statements",
         "Expression : Expr expr",
         "Print      : Expr value",
         "Var        : Token name, Expr initializer"

@@ -6,15 +6,19 @@ declaration    -> varDecl
 varDecl        -> "var" IDENTIFIER ( "=" expresion )? ";" ;
 
 statement      -> exprStmt
-                | printStmt ;
+                | printStmt 
+                | block ;
+
+block          -> "{" declaration* "}" ;
 
 printStmt      -> "print" expression ";" ;
 exprStmt       -> expresion ";" ;
 
-expression     -> ternary ;
+expression     -> assignment ;
 
-ternary        -> commaseq ( "?" ternary ":" ternary )? ;
-commaseq       -> equality ( "," equality )* ;
+assignment     -> IDENTIFIER "=" assignment | commaseq ;
+commaseq       -> ternary ( "," ternary )* ;
+ternary        -> equality ( "?" ternary ":" ternary )? ;
 equality       -> comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term           -> factor ( ( "-" | "+" ) factor )* ;

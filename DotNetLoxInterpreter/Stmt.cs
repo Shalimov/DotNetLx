@@ -5,9 +5,25 @@ namespace DotNetLoxInterpreter
     {
         public interface IVisitorStmt<out TR>
         {
+            public TR Visit(Block expr);
             public TR Visit(Expression expr);
             public TR Visit(Print expr);
             public TR Visit(Var expr);
+        }
+
+        public class Block : Stmt
+        {
+            public List<Stmt> Statements { get; set; }
+
+            public Block(List<Stmt> statements)
+            {
+                Statements = statements;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
         }
 
         public class Expression : Stmt

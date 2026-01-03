@@ -16,7 +16,7 @@ public class Parser
   {
     var statements = new List<Stmt>();
 
-    while(!IsAtEnd())
+    while (!IsAtEnd())
     {
       // NOTE: Declaration might produce null statements that can be reject here
       statements.Add(Declaration());
@@ -35,7 +35,7 @@ public class Parser
 
       return Statement();
     }
-    catch(LxParseException)
+    catch (LxParseException)
     {
       Synchronize();
       // DotnetLox.ReportError(error.Token, error.Message);
@@ -60,12 +60,29 @@ public class Parser
 
   private Stmt Statement()
   {
-    if (Match(TokenType.PRINT))
-    {
-      return PrintStmt();
-    }
+    if (Match(TokenType.PRINT)) return PrintStmt();
+    if (Match(TokenType.LEFT_BRACE)) return BlockStmt();
 
     return ExprStmt();
+  }
+
+  public Stmt BlockStmt()
+  {
+    return new Stmt.Block(Block());
+  }
+
+  public List<Stmt> Block()
+  {
+    var stmts = new List<Stmt>();
+
+    while (!(Check(TokenType.RIGHT_BRACE) || IsAtEnd()))
+    {
+      stmts.Add(Declaration());
+    }
+
+    Consume(TokenType.RIGHT_BRACE, "Block should be closed.");
+
+    return stmts;
   }
 
   private Stmt ExprStmt()
@@ -90,7 +107,27 @@ public class Parser
 
   private Expr Expression()
   {
-    return Commaseq();
+    return Assignment();
+  }
+
+  private Expr Assignment()
+  {
+    var expr = Commaseq();
+
+    if (Match(TokenType.EQUAL))
+    {
+      var equals = Previous();
+      var value = Assignment();
+
+      if (expr is Expr.Variable variable)
+      {
+        return new Expr.Assign(variable.Name, value);
+      }
+
+      Error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
   }
 
   private Expr Commaseq()
@@ -198,13 +235,13 @@ public class Parser
       var trailingExpr = Unary();
 
       return new Expr.Unary(token, trailingExpr);
-    } 
+    }
     else if (Match(TokenType.PLUS, TokenType.SLASH, TokenType.STAR))
     {
       var token = Previous();
       // Go deeper without throwing error right away
       // to provide better error reporting and in addition skip unnecessary tokens
-      _ = Unary(); 
+      _ = Unary();
 
       throw Error(token, $"Unary operator '{token.Lexeme}' is not supported.");
     }

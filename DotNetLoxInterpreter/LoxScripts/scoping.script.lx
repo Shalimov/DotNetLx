@@ -1,0 +1,26 @@
+var a = "local var";
+var b = "something similar " + 1;
+var c = "making and backing" + true + 1;
+
+{
+  var a = "shadow warrior lvl " + 1;
+
+  {
+    var a = "shadow warrior lvl " + 2;
+    var b = "he he he shadow is my goal";
+
+    print a + " " + b + " " + c;
+  }
+
+  print a + " " + b + " " + c;
+}
+
+{
+  var b = "become a shadow warrior";
+
+  print a + " " + b + " " + c;
+}
+
+print a;
+print b;
+print c;
