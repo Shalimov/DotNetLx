@@ -4,7 +4,7 @@ using static DotNetLoxInterpreter.LxRuntimeAssertions;
 
 namespace DotNetLoxInterpreter;
 
-public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueType>
+public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueType>, IInterpreter
 {
   private Environment _environment = new();
 
@@ -17,7 +17,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
     return default!;
   }
 
-  public ValueType Visit(Stmt.Expression expr)
+  public virtual ValueType Visit(Stmt.Expression expr)
   {
     Evaluate(expr.Expr);
 
@@ -34,15 +34,14 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
 
   public ValueType Visit(Stmt.Var expr)
   {
-
-    object? value = null;
+    _environment.Define(expr.Name.Lexeme);
 
     if (expr.Initializer is not null)
     {
-      value = Evaluate(expr.Initializer);
-    }
+      var value = Evaluate(expr.Initializer);
 
-    _environment.Define(expr.Name.Lexeme, value);
+      _environment.Assign(expr.Name, value);
+    }
 
     return default!;
   }

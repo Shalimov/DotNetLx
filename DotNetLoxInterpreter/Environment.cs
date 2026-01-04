@@ -1,11 +1,27 @@
-using System;
 using DotNetLoxInterpreter.Exceptions;
 
 namespace DotNetLoxInterpreter;
 
 public class Environment
 {
-  private readonly Dictionary<string, object?> _env = new ();
+  private class ValueContainer
+  {
+    private object? _value;
+
+    public bool IsInitialized { get; private set; }
+    public object? Value
+    {
+      get => _value;
+      set
+      {
+        IsInitialized = true;
+        _value = value;
+      }
+    }
+  }
+
+
+  private readonly Dictionary<string, ValueContainer> _env = new();
 
   public Environment? Enclosing { get; set; }
 
@@ -19,16 +35,16 @@ public class Environment
     Enclosing = enclosing;
   }
 
-  public void Define(string key, object? value)
+  public void Define(string key)
   {
-    _env.Add(key, value);
+    _env.Add(key, new ValueContainer());
   }
 
   public void Assign(Token name, object? value)
   {
     if (_env.ContainsKey(name.Lexeme))
     {
-      _env[name.Lexeme] = value;
+      _env[name.Lexeme].Value = value;
 
       return;
     }
@@ -45,9 +61,14 @@ public class Environment
 
   public object? Get(Token name)
   {
-    if (_env.TryGetValue(name.Lexeme, out object? value))
+    if (_env.TryGetValue(name.Lexeme, out var valueContainer))
     {
-      return value;
+      if (!valueContainer.IsInitialized)
+      {
+        throw new LxRuntimeException($"Variable with name '{name.Lexeme}' is not initialized.", name);
+      }
+
+      return valueContainer.Value;
     }
 
     if (Enclosing is not null)
@@ -55,6 +76,6 @@ public class Environment
       return Enclosing.Get(name);
     }
 
-    throw new LxRuntimeException($"Variable with name {name.Lexeme} is not defined.", name);
+    throw new LxRuntimeException($"Variable with name '{name.Lexeme}' is not defined.", name);
   }
 }

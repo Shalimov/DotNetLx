@@ -26,8 +26,7 @@ public class Scanner(string source)
     private readonly List<Token> _tokens = new();
     private int _columnStartOffset;
     private int _current;
-    private int _line;
-
+    private int _line = 1;
     private int _start;
 
     public List<Token> Scan()
@@ -38,7 +37,7 @@ public class Scanner(string source)
             ScanToken();
         }
 
-        _tokens.Add(new Token(TokenType.EOF, string.Empty, null, _line, _start));
+        _tokens.Add(new Token(TokenType.EOF, string.Empty, null, _line, _current - _columnStartOffset));
 
         return _tokens;
     }
@@ -225,6 +224,7 @@ public class Scanner(string source)
             else if (currentChar == '\n')
             {
                 _line++;
+                _columnStartOffset = _current;
             }
         } while (nestedness > 0 && !IsAtEnd());
     }
@@ -236,7 +236,7 @@ public class Scanner(string source)
 
     private void AddToken(TokenType type, object? literal)
     {
-        _tokens.Add(new Token(type, _source.Substring(_start, _current - _start), literal, _line, _start));
+        _tokens.Add(new Token(type, _source.Substring(_start, _current - _start), literal, _line, _current - _columnStartOffset));
     }
 
     private bool IsDigit(char character)

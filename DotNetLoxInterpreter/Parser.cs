@@ -19,7 +19,11 @@ public class Parser
     while (!IsAtEnd())
     {
       // NOTE: Declaration might produce null statements that can be reject here
-      statements.Add(Declaration());
+      var decl = Declaration();
+
+      if (decl is null) continue;
+
+      statements.Add(decl);
     }
 
     return statements;
@@ -27,7 +31,7 @@ public class Parser
 
   #region Descent Parsing of Statements
 
-  private Stmt Declaration()
+  private Stmt? Declaration()
   {
     try
     {
@@ -54,7 +58,8 @@ public class Parser
       initializer = Expression();
     }
 
-    Consume(TokenType.SEMICOLON, "Expect ',' after variable declaration.");
+    Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+    
     return new Stmt.Var(name, initializer);
   }
 
@@ -66,10 +71,7 @@ public class Parser
     return ExprStmt();
   }
 
-  public Stmt BlockStmt()
-  {
-    return new Stmt.Block(Block());
-  }
+  public Stmt BlockStmt() => new Stmt.Block(Block());
 
   public List<Stmt> Block()
   {
@@ -77,7 +79,11 @@ public class Parser
 
     while (!(Check(TokenType.RIGHT_BRACE) || IsAtEnd()))
     {
-      stmts.Add(Declaration());
+      var stmt = Declaration();
+
+      if (stmt is null) continue;
+
+      stmts.Add(stmt);
     }
 
     Consume(TokenType.RIGHT_BRACE, "Block should be closed.");

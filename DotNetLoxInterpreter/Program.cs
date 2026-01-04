@@ -9,7 +9,7 @@ public static class DotnetLox
     private const int ExData = 65;
     private const int ExSoftware = 70;
 
-    private static readonly Interpreter Interpreter = new Interpreter();
+    private static IInterpreter _interpreter = default!;
     private static bool HasError { get; set; }
     private static bool HasRuntimeError { get; set;}
 
@@ -17,8 +17,6 @@ public static class DotnetLox
     {
         if (args.Length > 1)
         {
-            // Console.WriteLine("Usage: dn-lox [script]");
-
             ReportError(0, 0, "Usage: dn-lox [script]");
 
             return ExWrongUsage;
@@ -26,6 +24,8 @@ public static class DotnetLox
 
         if (args.Length == 1)
         {
+            _interpreter = new Interpreter();
+
             RunFile(args[0]);
 
             if (HasError) return ExData;
@@ -33,6 +33,8 @@ public static class DotnetLox
         }
         else
         {
+            _interpreter = new InterpreterRepl();
+
             RunPrompt();
         }
 
@@ -69,7 +71,7 @@ public static class DotnetLox
         var parser = new Parser(tokens.ToArray());
         var statements = parser.Parse();
 
-        Interpreter.Interpret(statements);
+        _interpreter.Interpret(statements);
     }
 
     public static void RuntimeError(LxRuntimeException exception)
@@ -98,7 +100,6 @@ public static class DotnetLox
 
     private static void ReportError(int line, int col, string message, string where)
     {
-
         var report = string.IsNullOrEmpty(where)
             ? $"[line {line}; col {col}] Error: {message}"
             : $"[line {line}; col {col}] Error {where}: {message}";
