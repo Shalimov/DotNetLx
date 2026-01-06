@@ -66,6 +66,7 @@ public class Parser
   private Stmt Statement()
   {
     if (Match(TokenType.IF)) return IfStmt();
+    if (Match(TokenType.WHILE)) return WhileStmt();
     if (Match(TokenType.PRINT)) return PrintStmt();
     if (Match(TokenType.LEFT_BRACE)) return BlockStmt();
 
@@ -90,6 +91,19 @@ public class Parser
     }
 
     return new Stmt.If(condition, thenStatment, elseStatment);
+  }
+
+  public Stmt WhileStmt()
+  {
+    Consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+
+    var condition = Expression();
+
+    Consume(TokenType.RIGHT_PAREN, "Expect ')' after while condition.");
+
+    var whileBody = Statement();
+
+    return new Stmt.While(condition, whileBody);
   }
 
   public Stmt BlockStmt() => new Stmt.Block(Block());

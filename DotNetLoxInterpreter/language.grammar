@@ -12,6 +12,8 @@ statement      -> exprStmt
 
 ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
 
+while          -> "while" "(" expresion ")" statement ;
+
 blockStmt      -> "{" declaration* "}" ;
 
 printStmt      -> "print" expression ";" ;

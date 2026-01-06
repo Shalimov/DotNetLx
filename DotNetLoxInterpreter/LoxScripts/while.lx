@@ -1,0 +1,13 @@
+var i = 0;
+
+while (i < 5)
+{
+    print "Itrate inside the loop " + i;
+
+    if (i == 2 or i == 4)
+    {
+      print "Wow wow wow";
+    }
+
+    i = i + 1;
+}

@@ -7,6 +7,7 @@ namespace DotNetLoxInterpreter
         {
             public TR Visit(Block expr);
             public TR Visit(If expr);
+            public TR Visit(While expr);
             public TR Visit(Expression expr);
             public TR Visit(Print expr);
             public TR Visit(Var expr);
@@ -38,6 +39,23 @@ namespace DotNetLoxInterpreter
                 Condition = condition;
                 ThenBranch = thenbranch;
                 ElseBranch = elsebranch;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class While : Stmt
+        {
+            public Expr Condition { get; set; }
+            public Stmt WhileBody { get; set; }
+
+            public While(Expr condition, Stmt whilebody)
+            {
+                Condition = condition;
+                WhileBody = whilebody;
             }
 
             public override TR Accept<TR>(IVisitorStmt<TR> visitor)

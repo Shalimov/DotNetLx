@@ -23,6 +23,7 @@ Generator.DeclareAstInFile(output, "Expr", [
 Generator.DeclareAstInFile(output, "Stmt", [
         "Block      : List<Stmt> statements",
         "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
+        "While      : Expr condition, Stmt whileBody",
         "Expression : Expr expr",
         "Print      : Expr value",
         "Var        : Token name, Expr initializer"

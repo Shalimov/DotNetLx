@@ -26,6 +26,16 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
     return default!;
   }
 
+  public ValueType Visit(Stmt.While whileStmt)
+  {
+    while (IsTruthy(Evaluate(whileStmt.Condition)))
+    {
+      Execute(whileStmt.WhileBody);
+    }
+
+    return default!;
+  }
+
   public ValueType Visit(Stmt.Block block)
   {
     ExecuteBlock(block.Statements, new Environment(_environment));
