@@ -7,12 +7,15 @@ varDecl        -> "var" IDENTIFIER ( "=" expresion )? ";" ;
 
 statement      -> exprStmt
                 | ifStmt
+                | forStmt
+                | whileStmt
                 | printStmt
                 | blockStmt ;
 
 ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
 
-while          -> "while" "(" expresion ")" statement ;
+forStmt        -> "for" "(" ( varDecl | exprStmt | ";" ) expresion ";" expresion? ")" statement ;
+whileStmt      -> "while" "(" expresion ")" statement ;
 
 blockStmt      -> "{" declaration* "}" ;
 
