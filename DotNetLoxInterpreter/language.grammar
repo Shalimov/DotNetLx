@@ -6,10 +6,13 @@ declaration    -> varDecl
 varDecl        -> "var" IDENTIFIER ( "=" expresion )? ";" ;
 
 statement      -> exprStmt
-                | printStmt 
-                | block ;
+                | ifStmt
+                | printStmt
+                | blockStmt ;
 
-block          -> "{" declaration* "}" ;
+ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
+
+blockStmt      -> "{" declaration* "}" ;
 
 printStmt      -> "print" expression ";" ;
 exprStmt       -> expresion ";" ;
@@ -17,11 +20,18 @@ exprStmt       -> expresion ";" ;
 expression     -> assignment ;
 
 assignment     -> IDENTIFIER "=" assignment | commaseq ;
-commaseq       -> ternary ( "," ternary )* ;
+commaseq       -> logic_or ( "," logic_or )* ;
+
+logic_or       -> logic_and "or" logic_or ;
+logic_and      -> ternary "and" ternary ;
+
 ternary        -> equality ( "?" ternary ":" ternary )? ;
+
 equality       -> comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+
 term           -> factor ( ( "-" | "+" ) factor )* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
 unary          -> ( "!" | "-" ) unary | primary ;
+
 primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;

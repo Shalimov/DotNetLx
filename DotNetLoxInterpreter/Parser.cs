@@ -65,10 +65,31 @@ public class Parser
 
   private Stmt Statement()
   {
+    if (Match(TokenType.IF)) return IfStmt();
     if (Match(TokenType.PRINT)) return PrintStmt();
     if (Match(TokenType.LEFT_BRACE)) return BlockStmt();
 
     return ExprStmt();
+  }
+
+  public Stmt IfStmt()
+  {
+    Consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+
+    var condition = Expression();
+
+    Consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+    var thenStatment = Statement();
+
+    Stmt? elseStatment = null;
+
+    if (Match(TokenType.ELSE))
+    {
+      elseStatment = Statement();
+    }
+
+    return new Stmt.If(condition, thenStatment, elseStatment);
   }
 
   public Stmt BlockStmt() => new Stmt.Block(Block());
@@ -138,14 +159,44 @@ public class Parser
 
   private Expr Commaseq()
   {
-    var leadingExpr = Ternary();
+    var leadingExpr = LogicOr();
 
     while (Match(TokenType.COMMA))
     {
       var token = Previous();
-      var trailingExpr = Ternary();
+      var trailingExpr = LogicOr();
 
       leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr LogicOr()
+  {
+     var leadingExpr = LogicAnd();
+
+    while (Match(TokenType.OR))
+    {
+      var token = Previous();
+      var trailingExpr = LogicAnd();
+
+      leadingExpr = new Expr.Logical(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
+  }
+
+  private Expr LogicAnd()
+  {
+    var leadingExpr = Ternary();
+
+    while (Match(TokenType.AND))
+    {
+      var token = Previous();
+      var trailingExpr = Ternary();
+
+      leadingExpr = new Expr.Logical(leadingExpr, token, trailingExpr);
     }
 
     return leadingExpr;

@@ -6,6 +6,7 @@ namespace DotNetLoxInterpreter
         public interface IVisitorStmt<out TR>
         {
             public TR Visit(Block expr);
+            public TR Visit(If expr);
             public TR Visit(Expression expr);
             public TR Visit(Print expr);
             public TR Visit(Var expr);
@@ -18,6 +19,25 @@ namespace DotNetLoxInterpreter
             public Block(List<Stmt> statements)
             {
                 Statements = statements;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class If : Stmt
+        {
+            public Expr Condition { get; set; }
+            public Stmt ThenBranch { get; set; }
+            public Stmt? ElseBranch { get; set; }
+
+            public If(Expr condition, Stmt thenbranch, Stmt? elsebranch)
+            {
+                Condition = condition;
+                ThenBranch = thenbranch;
+                ElseBranch = elsebranch;
             }
 
             public override TR Accept<TR>(IVisitorStmt<TR> visitor)

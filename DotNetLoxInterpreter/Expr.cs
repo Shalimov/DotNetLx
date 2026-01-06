@@ -7,6 +7,7 @@ namespace DotNetLoxInterpreter
         {
             public TR Visit(Ternary expr);
             public TR Visit(Binary expr);
+            public TR Visit(Logical expr);
             public TR Visit(Grouping expr);
             public TR Visit(Literal expr);
             public TR Visit(Unary expr);
@@ -44,6 +45,25 @@ namespace DotNetLoxInterpreter
             public Expr Right { get; set; }
 
             public Binary(Expr left, Token op, Expr right)
+            {
+                Left = left;
+                Op = op;
+                Right = right;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Logical : Expr
+        {
+            public Expr Left { get; set; }
+            public Token Op { get; set; }
+            public Expr Right { get; set; }
+
+            public Logical(Expr left, Token op, Expr right)
             {
                 Left = left;
                 Op = op;

@@ -10,6 +10,22 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
 
   #region Statement Visits
 
+  public ValueType Visit(Stmt.If ifStmt)
+  {
+    var conditionValue = Evaluate(ifStmt.Condition);
+
+    if (IsTruthy(conditionValue))
+    {
+      Execute(ifStmt.ThenBranch);
+    }
+    else if (ifStmt.ElseBranch is not null)
+    {
+      Execute(ifStmt.ElseBranch);
+    }
+
+    return default!;
+  }
+
   public ValueType Visit(Stmt.Block block)
   {
     ExecuteBlock(block.Statements, new Environment(_environment));
@@ -153,6 +169,22 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
     }
 
     return null;
+  }
+
+  public object? Visit(Expr.Logical expr)
+  {
+    var leftValue = Evaluate(expr.Left);
+
+    if (expr.Op.Type == TokenType.OR)
+    {
+      if (IsTruthy(leftValue)) return leftValue;
+    }
+    else
+    {
+      if (!IsTruthy(leftValue)) return leftValue;
+    }
+ 
+    return Evaluate(expr.Right);
   }
 
   public object? Visit(Expr.Grouping expr)
