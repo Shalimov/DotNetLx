@@ -59,13 +59,14 @@ public class Parser
     }
 
     Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
-    
+
     return new Stmt.Var(name, initializer);
   }
 
   private Stmt Statement()
   {
     if (Match(TokenType.IF)) return IfStmt();
+    if (Match(TokenType.FOR)) return ForStmt();
     if (Match(TokenType.WHILE)) return WhileStmt();
     if (Match(TokenType.PRINT)) return PrintStmt();
     if (Match(TokenType.LEFT_BRACE)) return BlockStmt();
@@ -91,6 +92,66 @@ public class Parser
     }
 
     return new Stmt.If(condition, thenStatment, elseStatment);
+  }
+
+  public Stmt ForStmt()
+  {
+    Consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+
+    Stmt? initializer;
+
+    if (Match(TokenType.SEMICOLON))
+    {
+      initializer = null;
+    }
+    else if (Match(TokenType.VAR))
+    {
+      initializer = VarDecl();
+    }
+    else
+    {
+      initializer = ExprStmt();
+    }
+
+    Expr? condition = null;
+
+    if (!Check(TokenType.SEMICOLON))
+    {
+      condition = Expression();
+    }
+
+    Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+    Expr? evaluator = null;
+
+    if (!Check(TokenType.RIGHT_PAREN))
+    {
+      evaluator = Expression();
+    }
+
+    Consume(TokenType.RIGHT_PAREN, "Expect ')' after 'for' clauses.");
+
+    Stmt body = Statement();
+
+    if (evaluator is not null)
+    {
+      body = new Stmt.Block([
+        body,
+        new Stmt.Expression(evaluator)
+      ]);
+    }
+
+    body = new Stmt.While(condition ?? new Expr.Literal(true), body);
+
+    if (initializer is not null)
+    {
+      body = new Stmt.Block([
+        initializer,
+        body
+      ]);
+    }
+
+    return body;
   }
 
   public Stmt WhileStmt()
@@ -188,7 +249,7 @@ public class Parser
 
   private Expr LogicOr()
   {
-     var leadingExpr = LogicAnd();
+    var leadingExpr = LogicAnd();
 
     while (Match(TokenType.OR))
     {

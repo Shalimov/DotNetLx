@@ -11,3 +11,10 @@ while (i < 5)
 
     i = i + 1;
 }
+
+print "Wolfs are tughs:";
+
+for (var j = 0; j < 5; j = j + 1)
+{
+  print "Wow wow wow";
+}
