@@ -7,6 +7,8 @@ namespace DotNetLoxTools;
 
 public static class Generator
 {
+    private const string PropertySkipIdentifier = "Void";
+
     private class ParsedDefinition
     {
         public class ParsedProperty
@@ -155,6 +157,7 @@ public static class Generator
                 ClassName = defParts[0],
                 Properties = defParts[1]
                     .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Where(prop => prop != PropertySkipIdentifier)
                     .Select(prop =>
                     {
                         var propDef = prop.Split(' ',

@@ -26,6 +26,7 @@ Generator.DeclareAstInFile(output, "Stmt", [
         "While      : Expr condition, Stmt whileBody",
         "Expression : Expr expr",
         "Print      : Expr value",
+        "Break      : Void",
         "Var        : Token name, Expr initializer"
     ]);
 
