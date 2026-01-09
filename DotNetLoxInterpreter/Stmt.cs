@@ -10,6 +10,7 @@ namespace DotNetLoxInterpreter
             public TR Visit(While expr);
             public TR Visit(Expression expr);
             public TR Visit(Print expr);
+            public TR Visit(Break expr);
             public TR Visit(Var expr);
         }
 
@@ -86,6 +87,18 @@ namespace DotNetLoxInterpreter
             public Print(Expr value)
             {
                 Value = value;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Break : Stmt
+        {
+            public Break()
+            {
             }
 
             public override TR Accept<TR>(IVisitorStmt<TR> visitor)

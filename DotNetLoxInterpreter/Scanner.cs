@@ -13,6 +13,7 @@ public class Scanner(string source)
         { "nil", TokenType.NIL },
         { "for", TokenType.FOR },
         { "while", TokenType.WHILE },
+        { "break", TokenType.BREAK },
         { "if", TokenType.IF },
         { "else", TokenType.ELSE },
         { "and", TokenType.AND },

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DotNetLoxInterpreter": {
+      "commandName": "Project",
+      "commandLineArgs": "./LoxScripts/loops-with-jumps.lx"
+    }
+  }
+}

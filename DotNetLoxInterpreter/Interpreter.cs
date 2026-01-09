@@ -4,61 +4,63 @@ using static DotNetLoxInterpreter.LxRuntimeAssertions;
 
 namespace DotNetLoxInterpreter;
 
-public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueType>, IInterpreter
+public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ExecutionResult>, IInterpreter
 {
   private Environment _environment = new();
 
   #region Statement Visits
 
-  public ValueType Visit(Stmt.If ifStmt)
+  public ExecutionResult Visit(Stmt.If ifStmt)
   {
     var conditionValue = Evaluate(ifStmt.Condition);
 
     if (IsTruthy(conditionValue))
     {
-      Execute(ifStmt.ThenBranch);
+      return Execute(ifStmt.ThenBranch);
     }
     else if (ifStmt.ElseBranch is not null)
     {
-      Execute(ifStmt.ElseBranch);
+      return Execute(ifStmt.ElseBranch);
     }
 
-    return default!;
+    return ExecutionResult.Normal;
   }
 
-  public ValueType Visit(Stmt.While whileStmt)
+  public ExecutionResult Visit(Stmt.While whileStmt)
   {
     while (IsTruthy(Evaluate(whileStmt.Condition)))
     {
-      Execute(whileStmt.WhileBody);
+      var result = Execute(whileStmt.WhileBody);
+
+      if (result == ExecutionResult.Break)
+      {
+        break;
+      }
     }
 
-    return default!;
+    return ExecutionResult.Normal;
   }
 
-  public ValueType Visit(Stmt.Block block)
-  {
-    ExecuteBlock(block.Statements, new Environment(_environment));
+  public ExecutionResult Visit(Stmt.Block block) => ExecuteBlock(block.Statements, new Environment(_environment));
 
-    return default!;
-  }
+  public ExecutionResult Visit(Stmt.Break _brk) => ExecutionResult.Break;
 
-  public virtual ValueType Visit(Stmt.Expression expr)
+  public virtual ExecutionResult Visit(Stmt.Expression expr)
   {
     Evaluate(expr.Expr);
 
-    return default!;
+    return ExecutionResult.Normal;
   }
 
-  public ValueType Visit(Stmt.Print expr)
+  public ExecutionResult Visit(Stmt.Print expr)
   {
     var evaluatedValue = Evaluate(expr.Value);
     Console.Out.WriteLine(Stringify(evaluatedValue));
 
-    return default!;
+    return ExecutionResult.Normal;
   }
 
-  public ValueType Visit(Stmt.Var expr)
+  public ExecutionResult Visit(Stmt.Var expr)
   {
     _environment.Define(expr.Name.Lexeme);
 
@@ -69,7 +71,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
       _environment.Assign(expr.Name, value);
     }
 
-    return default!;
+    return ExecutionResult.Normal;
   }
 
   #endregion
@@ -247,7 +249,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
     {
       foreach (var stmt in stmts)
       {
-        Execute(stmt);
+        _ = Execute(stmt);
       }
     }
     catch (LxRuntimeException ex)
@@ -294,7 +296,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
     return expr.Accept(this);
   }
 
-  private void ExecuteBlock(List<Stmt> stmts, Environment environment)
+  private ExecutionResult ExecuteBlock(List<Stmt> stmts, Environment environment)
   {
     var previousEnv = _environment;
 
@@ -304,17 +306,24 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ValueTy
 
       foreach (var stmt in stmts)
       {
-        Execute(stmt);
+        var result = Execute(stmt);
+
+        if (result == ExecutionResult.Break)
+        {
+          return result;
+        }
       }
     }
     finally
     {
       _environment = previousEnv;
     }
+
+    return ExecutionResult.Normal;
   }
 
-  private void Execute(Stmt stmt)
+  private ExecutionResult Execute(Stmt stmt)
   {
-    stmt.Accept(this);
+    return stmt.Accept(this);
   }
 }

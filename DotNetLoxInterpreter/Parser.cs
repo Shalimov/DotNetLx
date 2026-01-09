@@ -7,6 +7,8 @@ public class Parser
   private readonly Token[] _tokens;
   private int _current = 0;
 
+  private int _insideLoopDepth = 0;
+
   public Parser(Token[] tokens)
   {
     _tokens = tokens;
@@ -68,6 +70,7 @@ public class Parser
     if (Match(TokenType.IF)) return IfStmt();
     if (Match(TokenType.FOR)) return ForStmt();
     if (Match(TokenType.WHILE)) return WhileStmt();
+    if (Match(TokenType.BREAK)) return BreakStmt();
     if (Match(TokenType.PRINT)) return PrintStmt();
     if (Match(TokenType.LEFT_BRACE)) return BlockStmt();
 
@@ -131,7 +134,11 @@ public class Parser
 
     Consume(TokenType.RIGHT_PAREN, "Expect ')' after 'for' clauses.");
 
+    _insideLoopDepth++;
+
     Stmt body = Statement();
+
+    _insideLoopDepth--;
 
     if (evaluator is not null)
     {
@@ -162,9 +169,23 @@ public class Parser
 
     Consume(TokenType.RIGHT_PAREN, "Expect ')' after while condition.");
 
+    _insideLoopDepth++;
+
     var whileBody = Statement();
 
+    _insideLoopDepth--;
+
     return new Stmt.While(condition, whileBody);
+  }
+
+  public Stmt BreakStmt()
+  {
+    if (_insideLoopDepth == 0)
+      throw Error(Peek(), "Usage of 'break' is not allowed outside of loops.");
+
+    Consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
+
+    return new Stmt.Break();
   }
 
   public Stmt BlockStmt() => new Stmt.Block(Block());
