@@ -16,11 +16,13 @@ Generator.DeclareAstInFile(output, "Expr", [
         "Grouping   : Expr expr",
         "Literal    : Object value",
         "Unary      : Token op, Expr right",
+        "Call       : Expr callee, Token traceParen, List<Expr> arguments",
         "Variable   : Token name",
         "Assign     : Token name, Expr value"
     ]);
 
 Generator.DeclareAstInFile(output, "Stmt", [
+        "Function   : Token name, List<Token> parameters, List<Stmt> body",
         "Block      : List<Stmt> statements",
         "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
         "While      : Expr condition, Stmt whileBody",
