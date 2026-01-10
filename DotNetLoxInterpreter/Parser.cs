@@ -99,6 +99,7 @@ public class Parser
     if (Match(TokenType.FOR)) return ForStmt();
     if (Match(TokenType.WHILE)) return WhileStmt();
     if (Match(TokenType.BREAK)) return BreakStmt();
+    if (Match(TokenType.RETURN)) return ReturnStmt();
     if (Match(TokenType.PRINT)) return PrintStmt();
     if (Match(TokenType.LEFT_BRACE)) return BlockStmt();
 
@@ -208,14 +209,32 @@ public class Parser
 
   public Stmt BreakStmt()
   {
+    var keyword = Previous();
+
     if (_insideLoopDepth == 0)
     {
-      Error(Previous(), "Usage of 'break' is not allowed outside of loops.");
+      Error(keyword, "Usage of 'break' is not allowed outside of loops.");
     }
 
     Consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
 
-    return new Stmt.Break();
+    return new Stmt.Break(keyword);
+  }
+
+  public Stmt ReturnStmt()
+  {
+    var keyword = Previous();
+
+    Expr? value = null;
+
+    if (!Check(TokenType.SEMICOLON))
+    {
+      value = Expression();
+    }
+
+    Consume(TokenType.SEMICOLON, "Expect ';' after return value.");
+
+    return new Stmt.Return(keyword, value);
   }
 
   public Stmt BlockStmt() => new Stmt.Block(Block());

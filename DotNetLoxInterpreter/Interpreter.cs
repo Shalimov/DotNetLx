@@ -46,13 +46,29 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
       {
         break;
       }
+      else if (result == ExecutionResult.Return)
+      {
+        return result;
+      }
     }
 
     return ExecutionResult.Normal;
   }
-  public ExecutionResult Visit(Stmt.Block block) => ExecuteBlock(block.Statements, new Environment(_environment));
+  public ExecutionResult Visit(Stmt.Block blockStmt) => ExecuteBlock(blockStmt.Statements, new Environment(_environment));
 
-  public ExecutionResult Visit(Stmt.Break _brk) => ExecutionResult.Break;
+  public ExecutionResult Visit(Stmt.Break brkStmt) => ExecutionResult.Break;
+
+  public ExecutionResult Visit(Stmt.Return retStmt)
+  {
+    if (retStmt.Value is null)
+    {
+      return ExecutionResult.Return;
+    }
+
+    var value = Evaluate(retStmt.Value);
+
+    return ExecutionResult.ReturnWithPayload(value);
+  }
 
   public virtual ExecutionResult Visit(Stmt.Expression exprStmt)
   {
@@ -303,7 +319,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
       {
         var result = Execute(stmt);
 
-        if (result == ExecutionResult.Break)
+        if (result != ExecutionResult.Normal)
         {
           return result;
         }

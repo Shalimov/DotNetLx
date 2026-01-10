@@ -21,9 +21,9 @@ public class LxFunction : ILxCallable
       environment.Define(_function.Parameters[i].Lexeme, arguments.ElementAt(i));
     }
 
-    _ = interpreter.ExecuteBlock(_function.Body, environment);
+    var executionResult = interpreter.ExecuteBlock(_function.Body, environment);
 
-    return null;
+    return executionResult.Payload;
   }
 
   public override string ToString() => $"<fn {_function.Name.Lexeme}>";

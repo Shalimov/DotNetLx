@@ -4,7 +4,7 @@ declaration    -> varDecl
                 | funDecl
                 | statement ;
 
-varDecl        -> "var" IDENTIFIER ( "=" expresion )? ";" ;
+varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 
 funDecl        -> "fun" function ;
 
@@ -16,20 +16,22 @@ statement      -> exprStmt
                 | forStmt
                 | whileStmt
                 | breakStmt
+                | returnStmt
                 | printStmt
                 | blockStmt ;
 
 ifStmt         -> "if" "(" expression ")" statement ( "else" statement )? ;
 
-forStmt        -> "for" "(" ( varDecl | exprStmt | ";" ) expresion ";" expresion? ")" statement ;
-whileStmt      -> "while" "(" expresion ")" statement ;
+forStmt        -> "for" "(" ( varDecl | exprStmt | ";" ) expression ";" expression? ")" statement ;
+whileStmt      -> "while" "(" expression ")" statement ;
 
 blockStmt      -> "{" declaration* "}" ;
 
 breakStmt      -> "break" ";" ;
+returnStmt     -> "return" expression? ";" ;
 
 printStmt      -> "print" expression ";" ;
-exprStmt       -> expresion ";" ;
+exprStmt       -> expression ";" ;
 
 expression     -> commaseq ;
 
