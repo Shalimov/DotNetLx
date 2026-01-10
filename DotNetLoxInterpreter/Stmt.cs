@@ -5,6 +5,7 @@ namespace DotNetLoxInterpreter
     {
         public interface IVisitorStmt<out TR>
         {
+            public TR Visit(Function expr);
             public TR Visit(Block expr);
             public TR Visit(If expr);
             public TR Visit(While expr);
@@ -12,6 +13,25 @@ namespace DotNetLoxInterpreter
             public TR Visit(Print expr);
             public TR Visit(Break expr);
             public TR Visit(Var expr);
+        }
+
+        public class Function : Stmt
+        {
+            public Token Name { get; set; }
+            public List<Token> Parameters { get; set; }
+            public List<Stmt> Body { get; set; }
+
+            public Function(Token name, List<Token> parameters, List<Stmt> body)
+            {
+                Name = name;
+                Parameters = parameters;
+                Body = body;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
         }
 
         public class Block : Stmt

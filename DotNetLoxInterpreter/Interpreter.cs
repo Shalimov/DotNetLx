@@ -1,12 +1,22 @@
 using System.Collections;
 using DotNetLoxInterpreter.Exceptions;
+using DotNetLoxInterpreter.NativeFunctions;
 using static DotNetLoxInterpreter.LxRuntimeAssertions;
 
 namespace DotNetLoxInterpreter;
 
 public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ExecutionResult>, IInterpreter
 {
-  private Environment _environment = new();
+  private readonly Environment _globals;
+  private Environment _environment;
+
+  public Interpreter()
+  {
+    _globals = new();
+    _environment = _globals;
+
+    _globals.Define("clock", new LxClockNativeFunction());
+  }
 
   #region Statement Visits
 
@@ -40,35 +50,40 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     return ExecutionResult.Normal;
   }
-
   public ExecutionResult Visit(Stmt.Block block) => ExecuteBlock(block.Statements, new Environment(_environment));
 
   public ExecutionResult Visit(Stmt.Break _brk) => ExecutionResult.Break;
 
-  public virtual ExecutionResult Visit(Stmt.Expression expr)
+  public virtual ExecutionResult Visit(Stmt.Expression exprStmt)
   {
-    Evaluate(expr.Expr);
+    Evaluate(exprStmt.Expr);
 
     return ExecutionResult.Normal;
   }
 
-  public ExecutionResult Visit(Stmt.Print expr)
+  public ExecutionResult Visit(Stmt.Print printStmt)
   {
-    var evaluatedValue = Evaluate(expr.Value);
+    var evaluatedValue = Evaluate(printStmt.Value);
     Console.Out.WriteLine(Stringify(evaluatedValue));
 
     return ExecutionResult.Normal;
   }
 
-  public ExecutionResult Visit(Stmt.Var expr)
+  public ExecutionResult Visit(Stmt.Function funDecl)
   {
-    _environment.Define(expr.Name.Lexeme);
+    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl));
 
-    if (expr.Initializer is not null)
+    return ExecutionResult.Normal;
+  }
+  public ExecutionResult Visit(Stmt.Var varDecl)
+  {
+    _environment.Define(varDecl.Name.Lexeme);
+
+    if (varDecl.Initializer is not null)
     {
-      var value = Evaluate(expr.Initializer);
+      var value = Evaluate(varDecl.Initializer);
 
-      _environment.Assign(expr.Name, value);
+      _environment.Assign(varDecl.Name, value);
     }
 
     return ExecutionResult.Normal;
@@ -195,7 +210,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     {
       if (!IsTruthy(leftValue)) return leftValue;
     }
- 
+
     return Evaluate(expr.Right);
   }
 
@@ -228,6 +243,24 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return null;
   }
 
+  public object? Visit(Expr.Call expr)
+  {
+    var callee = Evaluate(expr.Callee);
+    var arguments = expr.Arguments.Select(Evaluate);
+
+    if (callee is ILxCallable fn)
+    {
+      if (arguments.Count() != fn.Arity)
+      {
+        throw new LxRuntimeException($"Expected {fn.Arity} arguments, but got {arguments.Count()}.", expr.TraceParen);
+      }
+
+      return fn.Call(this, arguments, _globals);
+    }
+
+    throw new LxRuntimeException("Only classes or functions are callable.", expr.TraceParen);
+  }
+
   public object? Visit(Expr.Variable expr)
   {
     return _environment.Get(expr.Name);
@@ -256,6 +289,32 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     {
       DotnetLox.RuntimeError(ex);
     }
+  }
+
+  public ExecutionResult ExecuteBlock(List<Stmt> stmts, Environment environment)
+  {
+    var previousEnv = _environment;
+
+    try
+    {
+      _environment = environment;
+
+      foreach (var stmt in stmts)
+      {
+        var result = Execute(stmt);
+
+        if (result == ExecutionResult.Break)
+        {
+          return result;
+        }
+      }
+    }
+    finally
+    {
+      _environment = previousEnv;
+    }
+
+    return ExecutionResult.Normal;
   }
 
   private string Stringify(object? result)
@@ -294,32 +353,6 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
   private object? Evaluate(Expr expr)
   {
     return expr.Accept(this);
-  }
-
-  private ExecutionResult ExecuteBlock(List<Stmt> stmts, Environment environment)
-  {
-    var previousEnv = _environment;
-
-    try
-    {
-      _environment = environment;
-
-      foreach (var stmt in stmts)
-      {
-        var result = Execute(stmt);
-
-        if (result == ExecutionResult.Break)
-        {
-          return result;
-        }
-      }
-    }
-    finally
-    {
-      _environment = previousEnv;
-    }
-
-    return ExecutionResult.Normal;
   }
 
   private ExecutionResult Execute(Stmt stmt)

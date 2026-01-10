@@ -11,6 +11,7 @@ namespace DotNetLoxInterpreter
             public TR Visit(Grouping expr);
             public TR Visit(Literal expr);
             public TR Visit(Unary expr);
+            public TR Visit(Call expr);
             public TR Visit(Variable expr);
             public TR Visit(Assign expr);
         }
@@ -115,6 +116,25 @@ namespace DotNetLoxInterpreter
             {
                 Op = op;
                 Right = right;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Call : Expr
+        {
+            public Expr Callee { get; set; }
+            public Token TraceParen { get; set; }
+            public List<Expr> Arguments { get; set; }
+
+            public Call(Expr callee, Token traceparen, List<Expr> arguments)
+            {
+                Callee = callee;
+                TraceParen = traceparen;
+                Arguments = arguments;
             }
 
             public override TR Accept<TR>(IVisitorExpr<TR> visitor)

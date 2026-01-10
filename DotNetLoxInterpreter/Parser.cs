@@ -4,6 +4,7 @@ namespace DotNetLoxInterpreter;
 
 public class Parser
 {
+  private const int MAX_FUNCTION_PARAMS_COUNT = 255;
   private readonly Token[] _tokens;
   private int _current = 0;
 
@@ -37,6 +38,7 @@ public class Parser
   {
     try
     {
+      if (Match(TokenType.FUN)) return FunDecl("function");
       if (Match(TokenType.VAR)) return VarDecl();
 
       return Statement();
@@ -47,6 +49,32 @@ public class Parser
       // DotnetLox.ReportError(error.Token, error.Message);
       return null;
     }
+  }
+
+  private Stmt FunDecl(string kind)
+  {
+    var name = Consume(TokenType.IDENTIFIER, $"Expected name to be defined for a {kind} declaration.");
+
+    Consume(TokenType.LEFT_PAREN, "Expect '(' before parameters definition.");
+    
+    List<Token> parameters = [];
+    
+    if (!Check(TokenType.RIGHT_PAREN)) do
+    {
+      parameters.Add(Consume(TokenType.IDENTIFIER, "Expect parameter name."));
+    } while (Match(TokenType.COMMA));
+
+    if (parameters.Count >= MAX_FUNCTION_PARAMS_COUNT)
+    {
+      Error(Peek(), $"Can't have more than {MAX_FUNCTION_PARAMS_COUNT} parameters.");
+    }
+
+    Consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters definition.");
+    Consume(TokenType.LEFT_BRACE, $"Expect '{{' before {kind} body.");
+
+    var body = Block();
+    
+    return new Stmt.Function(name, parameters, body);
   }
 
   private Stmt VarDecl()
@@ -181,7 +209,9 @@ public class Parser
   public Stmt BreakStmt()
   {
     if (_insideLoopDepth == 0)
-      throw Error(Peek(), "Usage of 'break' is not allowed outside of loops.");
+    {
+      Error(Previous(), "Usage of 'break' is not allowed outside of loops.");
+    }
 
     Consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
 
@@ -230,12 +260,27 @@ public class Parser
 
   private Expr Expression()
   {
-    return Assignment();
+    return Commaseq();
+  }
+
+  private Expr Commaseq()
+  {
+    var leadingExpr = Assignment();
+
+    while (Match(TokenType.COMMA))
+    {
+      var token = Previous();
+      var trailingExpr = Assignment();
+
+      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
+    }
+
+    return leadingExpr;
   }
 
   private Expr Assignment()
   {
-    var expr = Commaseq();
+    var expr = LogicOr();
 
     if (Match(TokenType.EQUAL))
     {
@@ -251,21 +296,6 @@ public class Parser
     }
 
     return expr;
-  }
-
-  private Expr Commaseq()
-  {
-    var leadingExpr = LogicOr();
-
-    while (Match(TokenType.COMMA))
-    {
-      var token = Previous();
-      var trailingExpr = LogicOr();
-
-      leadingExpr = new Expr.Binary(leadingExpr, token, trailingExpr);
-    }
-
-    return leadingExpr;
   }
 
   private Expr LogicOr()
@@ -399,8 +429,53 @@ public class Parser
       throw Error(token, $"Unary operator '{token.Lexeme}' is not supported.");
     }
 
-    return Primary();
+    return Call();
   }
+
+  #region Call Expression
+
+  private Expr Call()
+  {
+    var callee = Primary();
+
+    while (true)
+    {
+      if (Match(TokenType.LEFT_PAREN))
+      {
+        callee = FinalizeCall(callee);
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    return callee;
+  }
+
+  private Expr FinalizeCall(Expr callee)
+  {
+    List<Expr> arguments = [];
+
+    if (!Check(TokenType.RIGHT_PAREN)) do
+    {
+      // In the original book Expression is used here
+      // But one of the challenges introduces a commaseq (aka comma operator)
+      // To avoid grammar ambiguities it should start parsing after "commaseq" definition
+      arguments.Add(Assignment());
+    } while (Match(TokenType.COMMA));
+
+    if (arguments.Count >= MAX_FUNCTION_PARAMS_COUNT)
+    {
+      Error(Peek(), $"Can't have more than {MAX_FUNCTION_PARAMS_COUNT} arguments");
+    }
+
+    var paren = Consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.");
+
+    return new Expr.Call(callee, paren, arguments);
+  }
+
+  #endregion
 
   private Expr Primary()
   {

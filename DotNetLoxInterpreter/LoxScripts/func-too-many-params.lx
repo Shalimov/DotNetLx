@@ -1,0 +1,6 @@
+fun tryingToGo(a, b, c) {
+  print "Hello world";
+  print "Something is happening here [" + a + b + c + "]";
+}
+
+tryingToGo(1, 2, 3, 4);

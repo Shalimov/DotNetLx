@@ -1,9 +1,15 @@
 program        -> declaration* EOF ; 
 
 declaration    -> varDecl
+                | funDecl
                 | statement ;
 
 varDecl        -> "var" IDENTIFIER ( "=" expresion )? ";" ;
+
+funDecl        -> "fun" function ;
+
+function       -> IDENTIFIER "(" parameters? ")" blockStmt ;
+parameters     -> IDENTIFIER ( "," IDENTIFIER )* ;
 
 statement      -> exprStmt
                 | ifStmt
@@ -25,10 +31,10 @@ breakStmt      -> "break" ";" ;
 printStmt      -> "print" expression ";" ;
 exprStmt       -> expresion ";" ;
 
-expression     -> assignment ;
+expression     -> commaseq ;
 
-assignment     -> IDENTIFIER "=" assignment | commaseq ;
-commaseq       -> logic_or ( "," logic_or )* ;
+commaseq       -> assignment ( "," assignment )* ;
+assignment     -> IDENTIFIER "=" assignment | logic_or ;
 
 logic_or       -> logic_and "or" logic_or ;
 logic_and      -> ternary "and" ternary ;
@@ -40,6 +46,9 @@ comparison     -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 
 term           -> factor ( ( "-" | "+" ) factor )* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
-unary          -> ( "!" | "-" ) unary | primary ;
+unary          -> ( "!" | "-" ) unary | call ;
+
+call           -> primary ( "(" arguments? ")" )* ;
+arguments      -> assignment ( "," assignment )* ;
 
 primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;

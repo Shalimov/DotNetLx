@@ -40,6 +40,11 @@ public class Environment
     _env.Add(key, new ValueContainer());
   }
 
+  public void Define(string key, object? value)
+  {
+    _env.Add(key, new ValueContainer() { Value = value });
+  }
+
   public void Assign(Token name, object? value)
   {
     if (_env.ContainsKey(name.Lexeme))
