@@ -2,6 +2,9 @@ using DotNetLoxInterpreter.Exceptions;
 
 namespace DotNetLoxInterpreter;
 
+/// <summary>
+/// Descent Parsing
+/// </summary>
 public class Parser
 {
   private const int MAX_FUNCTION_PARAMS_COUNT = 255;
@@ -9,6 +12,7 @@ public class Parser
   private int _current = 0;
 
   private int _insideLoopDepth = 0;
+  private int _lambdaIdentifer = 1;
 
   public Parser(Token[] tokens)
   {
@@ -32,7 +36,7 @@ public class Parser
     return statements;
   }
 
-  #region Descent Parsing of Statements
+  #region Statements
 
   private Stmt? Declaration()
   {
@@ -275,7 +279,7 @@ public class Parser
 
   #endregion
 
-  #region Descent Parsing Of Expressions
+  #region Expressions
 
   private Expr Expression()
   {
@@ -496,6 +500,43 @@ public class Parser
 
   #endregion
 
+  private Expr Lambda()
+  {
+    var keyword = Previous(); // Helpful for the desugaring case
+
+    Consume(TokenType.LEFT_PAREN, "Expect '(' after 'fun' in lambda expression.");
+
+    List<Token> parameters = [];
+
+    if (!Check(TokenType.RIGHT_PAREN)) do
+    {
+      parameters.Add(Consume(TokenType.IDENTIFIER, "Expect parameter name."));
+    } while (Match(TokenType.COMMA));
+
+    Consume(TokenType.RIGHT_PAREN, "Expect ')' after lambda parameters.");
+
+    List<Stmt> body;
+
+    if (Match(TokenType.LEFT_BRACE))
+    {
+      body = Block();
+    }
+    else
+    {
+      var retValue = Expression();
+
+      // Note: This part artificially generates a body of a function - aka Desugaring
+      // We generate this return statment 
+      // to reuse as much code as possible and be able to define one liner lambdas
+      // Note: that peek must point out here to RIGHT_PAREN token and the position of "desugared" code
+      body = [new Stmt.Return(keyword, retValue)];
+    }
+
+    var lambdaName = new Token(TokenType.IDENTIFIER, GenerateLambdaName(), null, keyword.Line, keyword.Column);
+
+    return new Expr.Lambda(lambdaName, parameters, body);
+  }
+
   private Expr Primary()
   {
     if (Match(TokenType.FALSE)) return new Expr.Literal(false);
@@ -521,6 +562,8 @@ public class Parser
 
       return new Expr.Grouping(leadingExpr);
     }
+
+    if (Match(TokenType.FUN)) return Lambda();
 
     throw Error(Peek(), "Expression is expected.");
   }
@@ -612,6 +655,8 @@ public class Parser
   }
 
   private bool IsAtEnd() => Peek().Type == TokenType.EOF;
+
+  private string GenerateLambdaName() => $"anonym_{_lambdaIdentifer++}";
 
   #endregion
 }

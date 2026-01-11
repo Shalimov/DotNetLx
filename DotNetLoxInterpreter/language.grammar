@@ -11,6 +11,7 @@ funDecl        -> "fun" function ;
 function       -> IDENTIFIER "(" parameters? ")" blockStmt ;
 parameters     -> IDENTIFIER ( "," IDENTIFIER )* ;
 
+
 statement      -> exprStmt
                 | ifStmt
                 | forStmt
@@ -36,10 +37,10 @@ exprStmt       -> expression ";" ;
 expression     -> commaseq ;
 
 commaseq       -> assignment ( "," assignment )* ;
-assignment     -> IDENTIFIER "=" assignment | logic_or ;
+assignment     -> IDENTIFIER "=" assignment | logicOr ;
 
-logic_or       -> logic_and "or" logic_or ;
-logic_and      -> ternary "and" ternary ;
+logicOr       -> logicAnd "or" logicOr ;
+logicAnd      -> ternary "and" ternary ;
 
 ternary        -> equality ( "?" ternary ":" ternary )? ;
 
@@ -53,4 +54,6 @@ unary          -> ( "!" | "-" ) unary | call ;
 call           -> primary ( "(" arguments? ")" )* ;
 arguments      -> assignment ( "," assignment )* ;
 
-primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
+primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda ;
+
+lambda         -> "fun" "(" parameters? ")" ( blockStmt | expression ) ;

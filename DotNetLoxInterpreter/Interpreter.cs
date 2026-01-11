@@ -291,6 +291,8 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return value;
   }
 
+  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(lambda.Name, lambda.Parameters, lambda.Body), _environment);
+
   #endregion
 
   public void Interpret(List<Stmt> stmts)

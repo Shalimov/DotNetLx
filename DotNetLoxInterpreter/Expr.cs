@@ -12,6 +12,7 @@ namespace DotNetLoxInterpreter
             public TR Visit(Literal expr);
             public TR Visit(Unary expr);
             public TR Visit(Call expr);
+            public TR Visit(Lambda expr);
             public TR Visit(Variable expr);
             public TR Visit(Assign expr);
         }
@@ -135,6 +136,25 @@ namespace DotNetLoxInterpreter
                 Callee = callee;
                 TraceParen = traceparen;
                 Arguments = arguments;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Lambda : Expr
+        {
+            public Token Name { get; set; }
+            public List<Token> Parameters { get; set; }
+            public List<Stmt> Body { get; set; }
+
+            public Lambda(Token name, List<Token> parameters, List<Stmt> body)
+            {
+                Name = name;
+                Parameters = parameters;
+                Body = body;
             }
 
             public override TR Accept<TR>(IVisitorExpr<TR> visitor)
