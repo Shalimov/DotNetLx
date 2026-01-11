@@ -2,7 +2,7 @@
   "profiles": {
     "DotNetLoxInterpreter": {
       "commandName": "Project",
-      "commandLineArgs": "./LoxScripts/loops-with-jumps.lx"
+      "commandLineArgs": "./LoxScripts/<script-name>.lx"
     }
   }
 }
