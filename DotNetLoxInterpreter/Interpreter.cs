@@ -87,10 +87,11 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
   public ExecutionResult Visit(Stmt.Function funDecl)
   {
-    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl));
+    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl, _environment));
 
     return ExecutionResult.Normal;
   }
+  
   public ExecutionResult Visit(Stmt.Var varDecl)
   {
     _environment.Define(varDecl.Name.Lexeme);
@@ -271,7 +272,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
         throw new LxRuntimeException($"Expected {fn.Arity} arguments, but got {arguments.Count()}.", expr.TraceParen);
       }
 
-      return fn.Call(this, arguments, _globals);
+      return fn.Call(this, arguments);
     }
 
     throw new LxRuntimeException("Only classes or functions are callable.", expr.TraceParen);

@@ -4,7 +4,7 @@ public class LxClockNativeFunction : ILxCallable
 {
   public int Arity => 0;
 
-  public object? Call(IInterpreter interpreter, IEnumerable<object?> arguments, Environment env)
+  public object? Call(IInterpreter interpreter, IEnumerable<object?> arguments)
   {
     return DateTimeOffset.Now.ToUnixTimeSeconds();
   }
