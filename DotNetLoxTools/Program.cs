@@ -17,6 +17,7 @@ Generator.DeclareAstInFile(output, "Expr", [
         "Literal    : Object value",
         "Unary      : Token op, Expr right",
         "Call       : Expr callee, Token traceParen, List<Expr> arguments",
+        "Lambda     : Token name, List<Token> parameters, List<Stmt> body",
         "Variable   : Token name",
         "Assign     : Token name, Expr value"
     ]);
