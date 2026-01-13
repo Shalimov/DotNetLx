@@ -115,8 +115,8 @@ fun makeMultipliers() {
     if (multiplier == 3) mult3 = makeMultiplier();
   }
 
-  print "2 * 5 = " + mult2()(5);
-  print "3 * 5 = " + mult3()(5);
+  print "2 * 5 = " + mult2(5);
+  print "3 * 5 = " + mult3(5);
 }
 
 makeMultipliers();

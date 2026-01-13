@@ -7,4 +7,4 @@ tryingToGo(1, 2, 3);
 
 // Try to invoke a native function "clock"
 
-print "Now is seconds" + clock();
+print "Now is seconds " + clock();

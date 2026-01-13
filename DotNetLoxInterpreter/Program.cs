@@ -12,7 +12,7 @@ public static class DotnetLox
 
     private static IInterpreter _interpreter = default!;
     private static bool HasError { get; set; }
-    private static bool HasRuntimeError { get; set;}
+    private static bool HasRuntimeError { get; set; }
 
     public static int Main(params string[] args)
     {
@@ -71,7 +71,9 @@ public static class DotnetLox
 
         var parser = new Parser(tokens.ToArray());
         var statements = parser.Parse();
-        
+
+        if (HasError) return;
+
         var staticAnalyzer = new StaticAnalyzer(_interpreter);
         staticAnalyzer.Analyze(statements);
 
@@ -82,7 +84,7 @@ public static class DotnetLox
 
     public static void RuntimeError(LxRuntimeException exception)
     {
-        ReportError(exception.Token.Line, exception.Token.Column, exception.Message);
+        Console.WriteLine("[line {line}; col {col}] Error: {message}", exception.Token.Line, exception.Token.Column, exception.Message);
 
         HasRuntimeError = true;
     }
@@ -111,7 +113,7 @@ public static class DotnetLox
             : $"[line {line}; col {col}] Error {where}: {message}";
 
         Console.WriteLine(report);
-        
+
         HasError = true;
     }
 }

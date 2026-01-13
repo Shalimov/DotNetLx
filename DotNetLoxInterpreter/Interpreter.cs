@@ -165,7 +165,10 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
       if (leftValue is string || rightValue is string)
       {
-        return leftValue!.ToString() + rightValue!.ToString();
+        var leftStr = leftValue ?? "nil";
+        var rightStr = rightValue ?? "nil";
+        
+        return leftStr.ToString() + rightStr.ToString();
       }
 
       throw new LxRuntimeException("Operands should be numbers or convertable to strings", expr.Op);
