@@ -111,7 +111,7 @@ public class Environment
   {
     Environment ancestorEnv = this;
 
-    for (var i = distance; i >= 0; i -= 1)
+    for (var i = 0; i < distance; i += 1)
     {
       ancestorEnv = ancestorEnv.Enclosing!;
     }

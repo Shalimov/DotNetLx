@@ -109,6 +109,9 @@ public static class DotnetLox
         var report = string.IsNullOrEmpty(where)
             ? $"[line {line}; col {col}] Error: {message}"
             : $"[line {line}; col {col}] Error {where}: {message}";
+
         Console.WriteLine(report);
+        
+        HasError = true;
     }
 }

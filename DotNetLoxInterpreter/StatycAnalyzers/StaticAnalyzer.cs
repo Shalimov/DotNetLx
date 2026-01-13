@@ -34,7 +34,9 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Stmt.Block stmt)
   {
+    BeginScope();
     Resolve(stmt.Statements);
+    EndScope();
 
     return default!;
   }
@@ -242,7 +244,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     // Invert loop flag to toggle it off once we enter the function body to avoid some edge cases
     // E.g: we are in the loop and we're creating functions inside (flag is 1),
     // but break in the body of the function makes no sense. (Turn of loop flag to avoid the confusion)
-    _meta = _meta & metaFlag & ~MetaFlags.Loop;
+    _meta = (_meta | metaFlag) & ~MetaFlags.Loop;
 
     BeginScope();
 

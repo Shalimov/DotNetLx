@@ -10,6 +10,7 @@ OUTPUT_FILE="${1:-test-results.txt}"
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 # Get the directory where the script is located
@@ -23,6 +24,24 @@ if [ ! -d "$SCRIPTS_DIR" ]; then
     exit 1
 fi
 
+# Function to determine if a test is expected to fail based on filename
+is_expected_to_fail() {
+    local filename="$1"
+
+    # Tests expected to fail (error tests and invalid cases)
+    if [[ "$filename" == *"-error.lx" ]] || \
+       [[ "$filename" == "break-outside"* ]] || \
+       [[ "$filename" == "func-too-"* ]] || \
+       [[ "$filename" == "declaration-self-ref.lx" ]] || \
+       [[ "$filename" == "non-init-var-runtime.lx" ]] || \
+       [[ "$filename" == "self-init-"*"-error.lx" ]] || \
+       [[ "$filename" == "function-inside-loop-with-break.lx" ]]; then
+        return 0  # true - expected to fail
+    fi
+
+    return 1  # false - expected to succeed
+}
+
 # Clear the output file
 > "$OUTPUT_FILE"
 
@@ -32,34 +51,59 @@ echo ""
 
 # Counter for statistics
 total_files=0
-successful_files=0
-failed_files=0
+passed_as_expected=0
+failed_as_expected=0
+unexpected_pass=0
+unexpected_fail=0
 
 # Find all .lx files and sort them
 while IFS= read -r file; do
     total_files=$((total_files + 1))
     filename=$(basename "$file")
 
-    echo -e "${BLUE}Running: $filename${NC}"
+    # Determine if test is expected to fail
+    if is_expected_to_fail "$filename"; then
+        expected_result="FAIL"
+        echo -e "${BLUE}Running: $filename ${YELLOW}[EXPECTED: FAIL]${NC}"
+    else
+        expected_result="PASS"
+        echo -e "${BLUE}Running: $filename ${GREEN}[EXPECTED: PASS]${NC}"
+    fi
 
     # Write separator to output file
     echo "=================================" >> "$OUTPUT_FILE"
     echo "-- $filename Output --" >> "$OUTPUT_FILE"
+    echo "-- EXPECTED: $expected_result" >> "$OUTPUT_FILE"
     echo "=================================" >> "$OUTPUT_FILE"
     echo "" >> "$OUTPUT_FILE"
 
     # Run the file and capture output
     cd "$PROJECT_DIR"
     if dotnet run "$file" >> "$OUTPUT_FILE" 2>&1; then
-        echo -e "${GREEN}✓ Success${NC}"
-        successful_files=$((successful_files + 1))
+        actual_result="PASS"
+        # Test passed - check if it was expected
+        if [ "$expected_result" = "PASS" ]; then
+            echo -e "${GREEN}✓ PASS (as expected)${NC}"
+            passed_as_expected=$((passed_as_expected + 1))
+        else
+            echo -e "${RED}✗ UNEXPECTED PASS (expected to fail!)${NC}"
+            unexpected_pass=$((unexpected_pass + 1))
+        fi
     else
-        echo -e "${RED}✗ Failed (expected for error test files)${NC}"
-        failed_files=$((failed_files + 1))
+        actual_result="FAIL"
+        # Test failed - check if it was expected
+        if [ "$expected_result" = "FAIL" ]; then
+            echo -e "${GREEN}✓ FAIL (as expected)${NC}"
+            failed_as_expected=$((failed_as_expected + 1))
+        else
+            echo -e "${RED}✗ UNEXPECTED FAIL (expected to pass!)${NC}"
+            unexpected_fail=$((unexpected_fail + 1))
+        fi
     fi
 
-    # Add blank lines after each test
+    # Write result to output file
     echo "" >> "$OUTPUT_FILE"
+    echo "-- ACTUAL: $actual_result" >> "$OUTPUT_FILE"
     echo "" >> "$OUTPUT_FILE"
 
 done < <(find "$SCRIPTS_DIR" -name "*.lx" -type f | sort)
@@ -68,7 +112,21 @@ done < <(find "$SCRIPTS_DIR" -name "*.lx" -type f | sort)
 echo ""
 echo -e "${BLUE}=== Test Summary ===${NC}"
 echo "Total files: $total_files"
-echo -e "${GREEN}Successful: $successful_files${NC}"
-echo -e "${RED}Failed: $failed_files${NC}"
+echo ""
+echo -e "${GREEN}Passed as expected: $passed_as_expected${NC}"
+echo -e "${GREEN}Failed as expected: $failed_as_expected${NC}"
+if [ $unexpected_pass -gt 0 ] || [ $unexpected_fail -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}=== Issues ===${NC}"
+    if [ $unexpected_pass -gt 0 ]; then
+        echo -e "${RED}Unexpected passes: $unexpected_pass${NC}"
+    fi
+    if [ $unexpected_fail -gt 0 ]; then
+        echo -e "${RED}Unexpected failures: $unexpected_fail${NC}"
+    fi
+fi
+echo ""
+total_correct=$((passed_as_expected + failed_as_expected))
+echo -e "${BLUE}Correct results: $total_correct / $total_files${NC}"
 echo ""
 echo "Full output saved to: $OUTPUT_FILE"
