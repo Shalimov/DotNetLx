@@ -1,0 +1,253 @@
+// Function Inside Function - Variable Assignment Test
+// Tests complex scenarios of nested functions assigning to captured variables
+
+print "=== Function Inside Function - Variable Assignment Test ===";
+
+// Test 1: Inner function modifies outer function's variable
+fun outerWithModifier() {
+  var counter = 0;
+
+  fun increment() {
+    counter = counter + 1;
+  }
+
+  fun getValue() {
+    return counter;
+  }
+
+  print "Before increment: " + getValue();
+  increment();
+  print "After 1st increment: " + getValue();
+  increment();
+  print "After 2nd increment: " + getValue();
+}
+
+print "Test 1 - Inner modifies outer:";
+outerWithModifier();
+
+// Test 2: Multiple nested levels with assignments
+fun level1() {
+  var a = 1;
+
+  fun level2() {
+    var b = 2;
+
+    fun level3() {
+      var c = 3;
+
+      // level3 modifies variables from all levels
+      a = a + 10; // Modify level1's variable
+      b = b + 20; // Modify level2's variable
+      c = c + 30; // Modify own variable
+
+      return "a=" + a + ", b=" + b + ", c=" + c;
+    }
+
+    print "Before level3: a=" + a + ", b=" + b;
+    var result = level3();
+    print "After level3: " + result;
+    print "Back in level2: a=" + a + ", b=" + b; // Should see modified values
+  }
+
+  level2();
+  print "Back in level1: a=" + a; // Should see modified value
+}
+
+print "Test 2 - Multi-level assignment:";
+level1();
+
+// Test 3: Closure returned that modifies captured variable
+fun makeAccumulator(start) {
+  var total = start;
+
+  fun add(value) {
+    total = total + value;
+    return total;
+  }
+
+  return add;
+}
+
+print "Test 3 - Returned closure with mutation:";
+var acc = makeAccumulator(0);
+print "Add 5: " + acc(5);   // 5
+print "Add 3: " + acc(3);   // 8
+print "Add 7: " + acc(7);   // 15
+
+var acc2 = makeAccumulator(100);
+print "New accumulator, add 10: " + acc2(10); // 110
+print "First accumulator still independent, add 2: " + acc(2); // 17
+
+// Test 4: Multiple inner functions modifying same variable
+fun makeState() {
+  var state = "IDLE";
+
+  fun start() {
+    state = "RUNNING";
+  }
+
+  fun stop() {
+    state = "STOPPED";
+  }
+
+  fun reset() {
+    state = "IDLE";
+  }
+
+  fun getState() {
+    return state;
+  }
+
+  // Demonstrate state machine
+  print "Initial: " + getState();
+  start();
+  print "After start: " + getState();
+  stop();
+  print "After stop: " + getState();
+  reset();
+  print "After reset: " + getState();
+}
+
+print "Test 4 - Multiple writers to shared variable:";
+makeState();
+
+// Test 5: Assignment in deeply nested lambda
+fun outerFunc(x) {
+  var captured = x;
+
+  fun middleFunc() {
+    return fun (delta) {
+      captured = captured + delta;
+      return captured;
+    };
+  }
+
+  var modifier = middleFunc();
+  print "Start value: " + captured;
+  print "After +10: " + modifier(10);
+  print "After +5: " + modifier(5);
+}
+
+print "Test 5 - Deep lambda assignment:";
+outerFunc(100);
+
+// Test 6: Assignment in conditional inside nested function
+fun conditionalAssignment() {
+  var value = 0;
+
+  fun process(n) {
+    if (n > 0) {
+      value = value + n;
+    }
+    if (n < 0) {
+      value = value - n;
+    }
+    if (n == 0) {
+      value = 0;
+    }
+    return value;
+  }
+
+  print "Initial: " + value;
+  print "Process 10: " + process(10);
+  print "Process -5: " + process(-5);
+  print "Process 3: " + process(3);
+  print "Process 0: " + process(0);
+}
+
+print "Test 6 - Conditional assignment in nested function:";
+conditionalAssignment();
+
+// Test 7: Loop inside nested function modifying outer variable
+fun loopModifier() {
+  var sum = 0;
+
+  fun addRange(start, end) {
+    for (var i = start; i <= end; i = i + 1) {
+      sum = sum + i; // Modifies outer 'sum'
+    }
+  }
+
+  print "Initial sum: " + sum;
+  addRange(1, 5);
+  print "After addRange(1,5): " + sum; // Should be 15
+  addRange(6, 10);
+  print "After addRange(6,10): " + sum; // Should be 55
+}
+
+print "Test 7 - Loop in nested function:";
+loopModifier();
+
+// Test 8: Assignment precedence - inner shadows, then assigns
+fun shadowThenAssign() {
+  var x = "outer";
+
+  fun inner() {
+    print "Before assignment: " + x; // Should see outer 'x'
+    x = "modified by inner"; // Assigns to outer 'x'
+    print "After assignment: " + x;
+  }
+
+  print "Start: " + x;
+  inner();
+  print "After inner call: " + x; // Should see modified value
+}
+
+print "Test 8 - Assignment without shadowing:";
+shadowThenAssign();
+
+// Test 9: Complex - function returns object-like closure with getters/setters
+fun makePerson(name, age) {
+  var personName = name;
+  var personAge = age;
+
+  fun getName() {
+    return personName;
+  }
+
+  fun setName(newName) {
+    personName = newName;
+  }
+
+  fun getAge() {
+    return personAge;
+  }
+
+  fun setAge(newAge) {
+    personAge = newAge;
+  }
+
+  fun birthday() {
+    personAge = personAge + 1;
+  }
+
+  fun describe() {
+    return getName() + " is " + getAge() + " years old";
+  }
+
+  return fun (action, arg) {
+    if (action == "describe") return describe();
+    if (action == "birthday") {
+      birthday();
+      return describe();
+    }
+    if (action == "setName") {
+      setName(arg);
+      return describe();
+    }
+    if (action == "setAge") {
+      setAge(arg);
+      return describe();
+    }
+    return "unknown";
+  };
+}
+
+print "Test 9 - Object-like closure:";
+var person = makePerson("Alice", 30);
+print person("describe", nil);
+print person("birthday", nil);
+print person("setName", "Bob");
+print person("setAge", 25);
+
+print "=== All Function Assignment Tests Complete ===";

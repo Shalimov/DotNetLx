@@ -1,0 +1,9 @@
+// Return Statement - In Block Error (top-level block)
+// Should trigger: "Can't return from top-level code"
+
+print "This should not execute - static analyzer should catch the error";
+
+{
+  var x = 5;
+  return x; // ERROR: return in top-level block
+}

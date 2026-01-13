@@ -7,11 +7,13 @@ namespace DotNetLoxInterpreter;
 
 public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ExecutionResult>, IInterpreter
 {
+  private readonly Dictionary<Expr, int?> _locals;
   private readonly Environment _globals;
   private Environment _environment;
 
   public Interpreter()
   {
+    _locals = new();
     _globals = new();
     _environment = _globals;
 
@@ -278,15 +280,19 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     throw new LxRuntimeException("Only classes or functions are callable.", expr.TraceParen);
   }
 
-  public object? Visit(Expr.Variable expr)
-  {
-    return _environment.Get(expr.Name);
-  }
+  public object? Visit(Expr.Variable expr) => LookupVariable(expr.Name, expr);
 
   public object? Visit(Expr.Assign expr)
   {
     var value = Evaluate(expr.Value);
-    _environment.Assign(expr.Name, value);
+    if (_locals.TryGetValue(expr, out int? distance) && distance.HasValue)
+    {
+      _environment.AssignAt(distance.Value, expr.Name, value);
+    }
+    else
+    {
+      _globals.Assign(expr.Name, value);
+    }
 
     return value;
   }
@@ -334,6 +340,23 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     }
 
     return ExecutionResult.Normal;
+  }
+
+  public void Resolve(Expr expr, int depth)
+  {
+    _locals.TryAdd(expr, depth);
+  }
+
+  private object? LookupVariable(Token name, Expr expr)
+  {
+    if (_locals.TryGetValue(expr, out int? distance) && distance.HasValue)
+    {
+      return _environment.GetAt(distance.Value, name);
+    }
+    else
+    {
+      return _globals.Get(name);
+    }
   }
 
   private string Stringify(object? result)

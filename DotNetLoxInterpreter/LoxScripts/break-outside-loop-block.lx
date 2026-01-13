@@ -1,0 +1,12 @@
+// Break Outside Loop - Inside Nested Blocks Error
+// Should trigger: "Statement 'break' is not allowed outside of a loop's body"
+
+print "This should not execute - static analyzer should catch the error";
+
+{
+  {
+    {
+      break; // ERROR: break in nested blocks without loop
+    }
+  }
+}

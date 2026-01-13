@@ -1,0 +1,7 @@
+// Break Outside Loop - Top Level Error
+// Should trigger: "Statement 'break' is not allowed outside of a loop's body"
+
+print "This should not execute - static analyzer should catch the error";
+
+var x = 10;
+break; // ERROR: break at top level

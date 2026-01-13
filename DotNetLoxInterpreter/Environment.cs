@@ -64,6 +64,12 @@ public class Environment
     throw new LxRuntimeException($"Undefined variable '{name.Lexeme}'.", name);
   }
 
+  public void AssignAt(int distance, Token name, object? value)
+  {
+    var targetEnv = Ancestor(distance)._env;
+   targetEnv[name.Lexeme].Value = value; 
+  }
+
   public object? Get(Token name)
   {
     if (_env.TryGetValue(name.Lexeme, out var valueContainer))
@@ -82,5 +88,34 @@ public class Environment
     }
 
     throw new LxRuntimeException($"Variable with name '{name.Lexeme}' is not defined.", name);
+  }
+
+  // This code is executed presumably after static analisis
+  // And all the variables are already marked and counted
+  // So if it is called then "variable" exist (Main Assumption)
+  // Thus some extra checks are removed
+  public object? GetAt(int distance, Token name)
+  {
+    var targetEnv = Ancestor(distance)._env;
+    var valueContainer = targetEnv[name.Lexeme]!;
+
+    if (!valueContainer.IsInitialized)
+    {
+      throw new LxRuntimeException($"Variable with name '{name.Lexeme}' is not initialized.", name);
+    }
+
+    return valueContainer.Value;
+  }
+
+  private Environment Ancestor(int distance)
+  {
+    Environment ancestorEnv = this;
+
+    for (var i = distance; i >= 0; i -= 1)
+    {
+      ancestorEnv = ancestorEnv.Enclosing!;
+    }
+
+    return ancestorEnv;
   }
 }

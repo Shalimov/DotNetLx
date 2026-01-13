@@ -1,0 +1,7 @@
+// Return Statement - Top Level Error
+// Should trigger: "Can't return from top-level code"
+
+print "This should not execute - static analyzer should catch the error";
+
+var x = 10;
+return x; // ERROR: return at top level

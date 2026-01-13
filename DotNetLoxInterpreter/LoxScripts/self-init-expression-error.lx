@@ -1,0 +1,11 @@
+// Self-Initialization - Complex Expression Error
+// Should trigger: "Can't read local variable in its own initializer"
+
+print "This should not execute - static analyzer should catch the error";
+
+var outer = 5;
+
+{
+  var inner = outer + inner; // ERROR: Can't read 'inner' in its own initializer
+  print inner;
+}

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using DotNetLoxInterpreter.Exceptions;
+using DotNetLoxInterpreter.StatycAnalyzers;
 
 namespace DotNetLoxInterpreter;
 
@@ -70,6 +71,11 @@ public static class DotnetLox
 
         var parser = new Parser(tokens.ToArray());
         var statements = parser.Parse();
+        
+        var staticAnalyzer = new StaticAnalyzer(_interpreter);
+        staticAnalyzer.Analyze(statements);
+
+        if (HasError) return;
 
         _interpreter.Interpret(statements);
     }

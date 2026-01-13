@@ -1,0 +1,20 @@
+// Function Inside Loop With Break - Edge Case Test
+// Tests that break inside a function defined in a loop should ERROR
+// The static analyzer should prevent break from working across function boundaries
+
+print "=== Function Inside Loop With Break - Edge Cases ===";
+
+// Test 1: Function defined in loop tries to break (SHOULD ERROR)
+// This file should FAIL at static analysis because break cannot cross function boundary
+print "Test 1 - Break inside function defined in loop:";
+
+for (var i = 0; i < 5; i = i + 1) {
+  fun tryBreak() {
+    print "Attempting to break from inside function...";
+    break; // ERROR: break not allowed here - function resets loop context
+  }
+
+  tryBreak();
+}
+
+print "This should not print if static analyzer caught the error!";

@@ -1,0 +1,11 @@
+// Self-Initialization - Simple Error
+// Should trigger: "Can't read local variable in its own initializer"
+
+print "This should not execute - static analyzer should catch the error";
+
+var a = 1;
+
+{
+  var a = a + 2; // ERROR: Can't read 'a' in its own initializer
+  print a;
+}

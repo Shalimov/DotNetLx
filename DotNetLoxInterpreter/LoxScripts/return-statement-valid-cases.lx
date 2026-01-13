@@ -1,0 +1,183 @@
+// Return Statement - Valid Edge Cases
+// Tests various valid return scenarios
+
+print "=== Return Statement - Valid Edge Cases ===";
+
+// Test 1: Return without value (implicit nil)
+fun noReturn() {
+  var x = 5;
+  return;
+}
+
+print "Test 1 - Return without value: " + noReturn(); // Should be nil
+
+// Test 2: Return in nested blocks within function
+fun nestedBlockReturn(n) {
+  {
+    {
+      if (n > 0) {
+        return "positive";
+      }
+      if (n < 0) {
+        return "negative";
+      }
+    }
+  }
+  return "zero";
+}
+
+print "Test 2 - Nested block return: " + nestedBlockReturn(5);
+print "Test 2 - Nested block return: " + nestedBlockReturn(-3);
+print "Test 2 - Nested block return: " + nestedBlockReturn(0);
+
+// Test 3: Multiple return points in function
+fun multipleReturns(x) {
+  if (x == 1) return "one";
+  if (x == 2) return "two";
+  if (x == 3) return "three";
+  return "other";
+}
+
+print "Test 3 - Multiple returns: " + multipleReturns(2);
+print "Test 3 - Multiple returns: " + multipleReturns(99);
+
+// Test 4: Return from deeply nested loops
+fun deeplyNestedReturn() {
+  for (var i = 0; i < 3; i = i + 1) {
+    for (var j = 0; j < 3; j = j + 1) {
+      if (i == 1) {
+        if (j == 1) {
+          return i * 10 + j;
+        }
+      }
+    }
+  }
+  return -1;
+}
+
+print "Test 4 - Deep nested return: " + deeplyNestedReturn(); // Should be 11
+
+// Test 5: Return from while loop
+fun whileReturn(target) {
+  var i = 0;
+  while (i < 100) {
+    if (i == target) {
+      return i;
+    }
+    i = i + 1;
+  }
+  return -1;
+}
+
+print "Test 5 - While loop return: " + whileReturn(42);
+
+// Test 6: Return complex expression
+fun complexReturn(a, b, c) {
+  return a * b + c;
+}
+
+print "Test 6 - Complex expression return: " + complexReturn(3, 4, 5); // 17
+
+// Test 7: Return from closure
+fun makeReturner(value) {
+  return fun () {
+    return value * 2;
+  };
+}
+
+var returner = makeReturner(21);
+print "Test 7 - Closure return: " + returner(); // 42
+
+// Test 8: Return function from function
+fun makeAdder(x) {
+  return fun (y) {
+    return x + y;
+  };
+}
+
+var add5 = makeAdder(5);
+print "Test 8 - Function return: " + add5(10); // 15
+
+// Test 9: Early return optimization
+fun earlyReturn(n) {
+  if (n < 0) return "negative";
+
+  var i = 0;
+  while (i < n) {
+    i = i + 1;
+  }
+
+  return i;
+}
+
+print "Test 9 - Early return: " + earlyReturn(-5);
+print "Test 9 - Early return: " + earlyReturn(3);
+
+// Test 10: Return breaks out of all control flow
+fun complexControlFlow(x) {
+  for (var i = 0; i < 10; i = i + 1) {
+    while (true) {
+      if (x == i) {
+        return "found at " + i;
+      }
+      break; // Break inner while
+    }
+  }
+  return "not found";
+}
+
+print "Test 10 - Complex control flow: " + complexControlFlow(7);
+
+// Test 11: Return with ternary expression
+fun ternaryReturn(x) {
+  return x > 0 ? "positive" : "non-positive";
+}
+
+print "Test 11 - Ternary return: " + ternaryReturn(5);
+print "Test 11 - Ternary return: " + ternaryReturn(-5);
+
+// Test 12: Return in for loop initializer (tricky edge case)
+fun forLoopReturn(n) {
+  for (var i = 0; i < n; i = i + 1) {
+    if (i == 2) return i;
+  }
+  return -1;
+}
+
+print "Test 12 - For loop return: " + forLoopReturn(5);
+
+// Test 13: Return with function call result
+fun helper() {
+  return 100;
+}
+
+fun returnFunctionCall() {
+  return helper();
+}
+
+print "Test 13 - Return function call: " + returnFunctionCall();
+
+// Test 14: Nested function returns don't affect outer
+fun outerReturn() {
+  fun innerReturn() {
+    return "inner";
+  }
+
+  var result = innerReturn();
+  print "Inner returned: " + result;
+
+  return "outer";
+}
+
+print "Test 14 - Nested returns: " + outerReturn();
+
+// Test 15: Return stops execution immediately
+fun stopExecution() {
+  print "Before return";
+  return "returned";
+  print "After return - should not print!";
+}
+
+print "Test 15 - Return stops execution: " + stopExecution();
+
+print "=== All Valid Return Tests Complete ===";

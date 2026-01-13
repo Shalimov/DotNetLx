@@ -1,0 +1,9 @@
+// Break Outside Loop - Inside If Statement Error
+// Should trigger: "Statement 'break' is not allowed outside of a loop's body"
+
+print "This should not execute - static analyzer should catch the error";
+
+if (true) {
+  var z = 1;
+  break; // ERROR: break in if statement without surrounding loop
+}

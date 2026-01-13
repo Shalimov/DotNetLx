@@ -1,0 +1,124 @@
+// Function Inside Loop - Valid Use Cases (No Break)
+// Tests that functions defined in loops work correctly WITHOUT break
+
+print "=== Function Inside Loop - Valid Cases (No Break) ===";
+
+// Test 1: Function defined in loop, called later (captures loop variable)
+print "Test 1 - Function captures loop variable:";
+
+var lastFunc = nil;
+
+for (var i = 0; i < 3; i = i + 1) {
+  var captured = i; // Each iteration gets own scope
+
+  fun printer() {
+    print "Captured: " + captured;
+  }
+
+  lastFunc = printer;
+  printer(); // Call immediately
+}
+
+print "Calling last captured function:";
+lastFunc(); // Should print the last captured value
+
+// Test 2: Function modifies outer loop variable
+print "Test 2 - Function modifies outer variable:";
+
+var sum = 0;
+
+for (var j = 1; j <= 5; j = j + 1) {
+  fun addToSum() {
+    sum = sum + j;
+  }
+
+  addToSum();
+}
+
+print "Sum after loop: " + sum; // Should be 1+2+3+4+5 = 15
+
+// Test 3: Multiple functions defined in same loop iteration
+print "Test 3 - Multiple functions per iteration:";
+
+for (var k = 0; k < 2; k = k + 1) {
+  fun first() {
+    return "first-" + k;
+  }
+
+  fun second() {
+    return "second-" + k;
+  }
+
+  print first() + " and " + second();
+}
+
+// Test 4: Nested loops with function in inner loop
+print "Test 4 - Nested loops with function:";
+
+for (var outer = 0; outer < 2; outer = outer + 1) {
+  for (var inner = 0; inner < 2; inner = inner + 1) {
+    fun nested() {
+      print "Outer: " + outer + ", Inner: " + inner;
+    }
+
+    nested();
+  }
+}
+
+// Test 5: Function in while loop
+print "Test 5 - Function in while loop:";
+
+var count = 0;
+
+while (count < 3) {
+  var current = count; // Capture current value
+
+  fun whilePrinter() {
+    print "While iteration: " + current;
+  }
+
+  whilePrinter();
+  count = count + 1;
+}
+
+// Test 6: Lambda inside loop
+print "Test 6 - Lambda inside loop:";
+
+fun processWithLambda(transform) {
+  var result = 0;
+
+  for (var n = 1; n <= 3; n = n + 1) {
+    result = result + transform(n);
+  }
+
+  return result;
+}
+
+var squared = processWithLambda(fun (x) x * x);
+print "Sum of squares 1-3: " + squared; // 1 + 4 + 9 = 14
+
+// Test 7: Function returned from loop
+print "Test 7 - Function returned from loop:";
+
+fun makeMultipliers() {
+  var mult2 = nil;
+  var mult3 = nil;
+
+  for (var m = 2; m <= 3; m = m + 1) {
+    var multiplier = m;
+
+    fun makeMultiplier() {
+      return fun (x) x * multiplier;
+    }
+
+    if (multiplier == 2) mult2 = makeMultiplier();
+    if (multiplier == 3) mult3 = makeMultiplier();
+  }
+
+  print "2 * 5 = " + mult2()(5);
+  print "3 * 5 = " + mult3()(5);
+}
+
+makeMultipliers();
+
+print "=== All Valid Function-In-Loop Tests Complete ===";

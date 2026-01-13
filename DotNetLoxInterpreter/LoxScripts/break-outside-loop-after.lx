@@ -1,0 +1,11 @@
+// Break Outside Loop - After Loop Ends Error
+// Should trigger: "Statement 'break' is not allowed outside of a loop's body"
+
+print "This should not execute - static analyzer should catch the error";
+
+var i = 0;
+while (i < 5) {
+  i = i + 1;
+}
+
+break; // ERROR: break after loop has ended

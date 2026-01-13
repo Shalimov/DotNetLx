@@ -1,0 +1,148 @@
+// Self-Initialization - Valid Cases
+// Tests cases where shadowing is valid (reading outer scope)
+
+print "=== Self-Initialization - Valid Cases ===";
+
+// Test 1: Valid shadowing - reading from outer scope
+var a = 1;
+print "Test 1 - Outer 'a': " + a;
+
+{
+  var b = a; // Valid: reading outer 'a', not self-referencing
+  print "Test 1 - Inner 'b' (from outer 'a'): " + b;
+
+  var a = 2; // Valid: new 'a' shadows outer, initialized with literal
+  print "Test 1 - Inner 'a' (shadows outer): " + a;
+}
+
+print "Test 1 - Back to outer 'a': " + a;
+
+// Test 2: Valid initialization from outer scope in function
+var x = 10;
+
+fun useOuter() {
+  var y = x; // Valid: reading outer scope 'x'
+  print "Test 2 - Function 'y' from outer 'x': " + y;
+
+  var x = 20; // Valid: shadows outer 'x'
+  print "Test 2 - Function 'x' (shadows outer): " + x;
+}
+
+useOuter();
+print "Test 2 - Outer 'x' unchanged: " + x;
+
+// Test 3: Multiple scope levels
+var level1 = "L1";
+
+{
+  var level2 = level1; // Valid: reads outer
+  print "Test 3 - Level 2: " + level2;
+
+  {
+    var level3 = level2; // Valid: reads outer
+    print "Test 3 - Level 3: " + level3;
+
+    {
+      var level4 = level3; // Valid: reads outer
+      print "Test 3 - Level 4: " + level4;
+    }
+  }
+}
+
+// Test 4: Valid use in expressions
+var m = 5;
+
+{
+  var n = m * 2; // Valid: reads outer 'm'
+  print "Test 4 - n = m * 2: " + n;
+
+  var p = n + m; // Valid: both from outer scope
+  print "Test 4 - p = n + m: " + p;
+}
+
+// Test 5: Ternary with outer scope variable
+var condition = true;
+var value = 100;
+
+{
+  var result = condition ? value : 0; // Valid: reads outer variables
+  print "Test 5 - Ternary with outer: " + result;
+}
+
+// Test 6: Function parameter doesn't conflict with local
+fun testParams(param) {
+  var local = param; // Valid: param is in scope
+  print "Test 6 - Local from param: " + local;
+
+  var param2 = param + 1; // Valid: different name
+  print "Test 6 - param2: " + param2;
+}
+
+testParams(42);
+
+// Test 7: Initialization with function call using outer variable
+fun transform(n) {
+  return n * 10;
+}
+
+var original = 7;
+
+{
+  var transformed = transform(original); // Valid: 'original' is outer
+  print "Test 7 - Transformed: " + transformed;
+}
+
+// Test 8: Sequential declarations are independent
+{
+  var first = 1;
+  var second = first; // Valid: 'first' is already defined
+  var third = second + first; // Valid: both are defined
+  print "Test 8 - Sequential: first=" + first + ", second=" + second + ", third=" + third;
+}
+
+// Test 9: Loop variable is valid in its own update expression
+for (var i = 0; i < 3; i = i + 1) { // Valid: 'i' is already defined when used in update
+  print "Test 9 - Loop i: " + i;
+}
+
+// Test 10: Uninitialized declaration, then later use
+{
+  var declared; // Valid: declaration without initialization
+  declared = 5; // Valid: assignment after declaration
+  print "Test 10 - Declared then assigned: " + declared;
+}
+
+// Test 11: Closure captures outer, then shadows
+var outer = "outer value";
+
+fun makeClosures() {
+  fun captureOuter() {
+    return outer; // Valid: captures outer
+  }
+
+  fun shadowOuter() {
+    var outer = "inner value"; // Valid: shadows, initialized with literal
+    return outer;
+  }
+
+  print "Test 11 - Captured: " + captureOuter();
+  print "Test 11 - Shadowed: " + shadowOuter();
+}
+
+makeClosures();
+
+// Test 12: Complex expression with multiple outer variables
+var v1 = 10;
+var v2 = 20;
+var v3 = 30;
+
+{
+  var sum = v1 + v2 + v3; // Valid: all from outer scope
+  print "Test 12 - Sum: " + sum;
+
+  var v1 = 100; // Now shadow v1
+  var localSum = v1 + v2; // Valid: uses new v1 and outer v2
+  print "Test 12 - Local sum with shadow: " + localSum;
+}
+
+print "=== All Valid Self-Init Tests Complete ===";

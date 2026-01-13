@@ -1,0 +1,9 @@
+// Self-Initialization - Ternary Expression Error
+// Should trigger: "Can't read local variable in its own initializer"
+
+print "This should not execute - static analyzer should catch the error";
+
+{
+  var x = true ? x : 0; // ERROR: Can't read 'x' in its own initializer
+  print x;
+}

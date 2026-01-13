@@ -10,8 +10,6 @@ public class Parser
   private const int MAX_FUNCTION_PARAMS_COUNT = 255;
   private readonly Token[] _tokens;
   private int _current = 0;
-
-  private int _insideLoopDepth = 0;
   private int _lambdaIdentifer = 1;
 
   public Parser(Token[] tokens)
@@ -167,11 +165,7 @@ public class Parser
 
     Consume(TokenType.RIGHT_PAREN, "Expect ')' after 'for' clauses.");
 
-    _insideLoopDepth++;
-
     Stmt body = Statement();
-
-    _insideLoopDepth--;
 
     if (evaluator is not null)
     {
@@ -202,11 +196,7 @@ public class Parser
 
     Consume(TokenType.RIGHT_PAREN, "Expect ')' after while condition.");
 
-    _insideLoopDepth++;
-
     var whileBody = Statement();
-
-    _insideLoopDepth--;
 
     return new Stmt.While(condition, whileBody);
   }
@@ -214,11 +204,6 @@ public class Parser
   public Stmt BreakStmt()
   {
     var keyword = Previous();
-
-    if (_insideLoopDepth == 0)
-    {
-      Error(keyword, "Usage of 'break' is not allowed outside of loops.");
-    }
 
     Consume(TokenType.SEMICOLON, "Expect ';' after 'break'.");
 

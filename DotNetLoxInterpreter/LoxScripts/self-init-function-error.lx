@@ -1,0 +1,11 @@
+// Self-Initialization - In Function Error
+// Should trigger: "Can't read local variable in its own initializer"
+
+print "This should not execute - static analyzer should catch the error";
+
+fun testSelfInit() {
+  var x = x + 1; // ERROR: Can't read 'x' in its own initializer
+  return x;
+}
+
+testSelfInit();

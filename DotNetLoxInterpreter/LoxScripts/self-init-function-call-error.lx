@@ -1,0 +1,13 @@
+// Self-Initialization - Function Call Error
+// Should trigger: "Can't read local variable in its own initializer"
+
+print "This should not execute - static analyzer should catch the error";
+
+fun double(n) {
+  return n * 2;
+}
+
+{
+  var y = double(y); // ERROR: Can't read 'y' in its own initializer
+  print y;
+}

@@ -1,0 +1,132 @@
+// Lexical Scope: Variable Extraction Test
+// Tests that closures capture variables from their lexical scope,
+// not the dynamic scope at call time
+
+print "=== Lexical Scope - Variable Extraction Test ===";
+
+// Test 1: Basic closure captures outer variable
+var outerVar = "outer";
+
+fun makeGetter() {
+  var captured = outerVar;
+  return fun () captured;
+}
+
+var getter = makeGetter();
+outerVar = "modified";
+print "Test 1 - Basic capture: " + getter(); // Should print "outer" (lexical)
+
+// Test 2: Multiple closures share same scope
+var shared = 0;
+
+fun makeCounterPair() {
+  var count = shared;
+
+  fun increment() {
+    count = count + 1;
+    return count;
+  }
+
+  fun getValue() {
+    return count;
+  }
+
+  // Return both functions that share the same 'count'
+  return fun () {
+    var pair = "";
+    pair = "inc:" + increment() + ",get:" + getValue();
+    return pair;
+  };
+}
+
+var pair = makeCounterPair();
+print "Test 2 - Shared scope: " + pair(); // inc:1,get:1
+print "Test 2 - Shared scope: " + pair(); // inc:2,get:2
+
+// Test 3: Nested function extracts from multiple scope levels
+var level1 = "L1";
+
+fun outer() {
+  var level2 = "L2";
+
+  fun middle() {
+    var level3 = "L3";
+
+    fun inner() {
+      return level1 + "-" + level2 + "-" + level3;
+    }
+
+    return inner;
+  }
+
+  return middle;
+}
+
+var middleFunc = outer();
+var innerFunc = middleFunc();
+level1 = "CHANGED";
+print "Test 3 - Multi-level capture: " + innerFunc(); // Should be "L1-L2-L3"
+
+// Test 4: Loop variable capture (each iteration gets own scope)
+fun makeCounters() {
+  var funcs = nil;
+
+  for (var i = 0; i < 3; i = i + 1) {
+    var captured = i;
+
+    fun printer() {
+      print "Counter: " + captured;
+    }
+
+    if (captured == 0) printer();
+    if (captured == 1) printer();
+    if (captured == 2) printer();
+  }
+}
+
+print "Test 4 - Loop variable capture:";
+makeCounters(); // Should print 0, 1, 2
+
+// Test 5: Closure over mutable variable
+fun makeMutableCapture() {
+  var x = 10;
+
+  fun getX() {
+    return x;
+  }
+
+  fun setX(newVal) {
+    x = newVal;
+  }
+
+  fun demonstrate() {
+    print "Initial: " + getX();
+    setX(20);
+    print "After set: " + getX();
+  }
+
+  return demonstrate;
+}
+
+var demo = makeMutableCapture();
+print "Test 5 - Mutable capture:";
+demo();
+
+// Test 6: Shadowing doesn't affect already-captured variables
+var global = "global";
+
+fun captureThenShadow() {
+  var local = global; // Captures "global"
+
+  fun inner() {
+    var global = "shadowed"; // Shadows the outer 'global'
+    return local + " vs " + global;
+  }
+
+  return inner;
+}
+
+var shadowTest = captureThenShadow();
+print "Test 6 - Shadow vs Capture: " + shadowTest(); // "global vs shadowed"
+
+print "=== All Lexical Scope Tests Complete ===";

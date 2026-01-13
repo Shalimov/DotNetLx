@@ -1,0 +1,11 @@
+// Break Outside Loop - Inside Function Error
+// Should trigger: "Statement 'break' is not allowed outside of a loop's body"
+
+print "This should not execute - static analyzer should catch the error";
+
+fun noLoopHere() {
+  var y = 5;
+  break; // ERROR: break in function without loop
+}
+
+noLoopHere();
