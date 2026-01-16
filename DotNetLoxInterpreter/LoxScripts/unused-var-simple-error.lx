@@ -1,0 +1,8 @@
+// Simple unused local variable in function scope
+// Expect: Variable 'unused' is declared, but unused.
+
+fun testUnused() {
+  var unused = 42;
+}
+
+testUnused();

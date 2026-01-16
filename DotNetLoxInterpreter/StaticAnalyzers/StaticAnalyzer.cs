@@ -1,18 +1,10 @@
-namespace DotNetLoxInterpreter.StatycAnalyzers;
+namespace DotNetLoxInterpreter.StaticAnalyzers;
 
 public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<ValueTask>
 {
-  private enum MetaFlags
-  {
-    None = 0b_0000_0000,
-    Loop = 0b_0000_0001,
-    Function = 0b_0000_0010,
-  }
-
-  private MetaFlags _meta = MetaFlags.None;
-
   private readonly IInterpreter _interpreter;
-  private readonly Stack<Dictionary<string, bool>> _scopes;
+  private readonly Stack<Dictionary<Token, VariableSymanticMeta>> _scopes;
+  private SymanticEnvironmentFlags _symanticEnvFlags = SymanticEnvironmentFlags.None;
 
   public StaticAnalyzer(IInterpreter interpreter)
   {
@@ -27,7 +19,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     Declare(stmt.Name);
     Define(stmt.Name);
 
-    ResolveFunction(stmt, MetaFlags.Function);
+    ResolveFunction(stmt, SymanticEnvironmentFlags.Function);
 
     return default!;
   }
@@ -52,13 +44,13 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Stmt.While stmt)
   {
-    var enclosingSurroundings = _meta;
-    _meta |= MetaFlags.Loop;
+    var enclosingSurroundings = _symanticEnvFlags;
+    _symanticEnvFlags |= SymanticEnvironmentFlags.Loop;
     
     Resolve(stmt.Condition);
     Resolve(stmt.WhileBody);
 
-    _meta = enclosingSurroundings;
+    _symanticEnvFlags = enclosingSurroundings;
 
     return default!;
   }
@@ -79,7 +71,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Stmt.Break stmt)
   {
-    if ((_meta & MetaFlags.Loop) != MetaFlags.Loop)
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Loop) != SymanticEnvironmentFlags.Loop)
     {
       DotnetLox.ReportError(stmt.Keyword, "Statment 'break' is not allowed outside of a loop's body.");
     }
@@ -89,7 +81,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Stmt.Return stmt)
   {
-    if ((_meta & MetaFlags.Function) != MetaFlags.Function)
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Function) != SymanticEnvironmentFlags.Function)
     {
       DotnetLox.ReportError(stmt.Keyword, "Can't return from top-level code.");
     }
@@ -182,11 +174,12 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueTask Visit(Expr.Variable expr)
   {
-    if (_scopes.Count != 0 && _scopes.Peek().TryGetValue(expr.Name.Lexeme, out bool defined) && defined == false)
+    if (_scopes.Count != 0 && _scopes.Peek().TryGetValue(expr.Name, out var variableSymanticMeta) && variableSymanticMeta.IsDefined == false)
     {
       DotnetLox.ReportError(expr.Name, "Can't read local variable in its own initializer.");
     }
 
+    MarkAsUsed(expr);
     ResolveLocal(expr, expr.Name);
 
     return default!;
@@ -212,6 +205,20 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     }
   }
 
+  private void MarkAsUsed(Expr.Variable expr)
+  {
+    var name = expr.Name;
+
+    foreach (var scope in _scopes)
+    {
+      if (scope.ContainsKey(name))
+      {
+        scope[name].IsUsed = true;
+        break;
+      }
+    }
+  }
+
   private void Resolve(Stmt stmt)
   {
     stmt.Accept(this);
@@ -228,7 +235,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     foreach (var scope in _scopes)
     {
-      if (scope.ContainsKey(name.Lexeme))
+      if (scope.ContainsKey(name))
       {
         _interpreter.Resolve(expr, i);
         break;
@@ -238,13 +245,13 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     }
   }
 
-  private void ResolveFunction(Stmt.Function stmt, MetaFlags metaFlag)
+  private void ResolveFunction(Stmt.Function stmt, SymanticEnvironmentFlags metaFlag)
   {
-    var enclosingMeta = _meta;
+    var enclosingMeta = _symanticEnvFlags;
     // Invert loop flag to toggle it off once we enter the function body to avoid some edge cases
     // E.g: we are in the loop and we're creating functions inside (flag is 1),
     // but break in the body of the function makes no sense. (Turn of loop flag to avoid the confusion)
-    _meta = (_meta | metaFlag) & ~MetaFlags.Loop;
+    _symanticEnvFlags = (_symanticEnvFlags | metaFlag) & ~SymanticEnvironmentFlags.Loop;
 
     BeginScope();
 
@@ -258,7 +265,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     EndScope();
 
-    _meta = enclosingMeta;
+    _symanticEnvFlags = enclosingMeta;
   }
 
   private void Declare(Token name)
@@ -267,19 +274,19 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     var currentScope = _scopes.Peek();
 
-    if (currentScope.ContainsKey(name.Lexeme))
+    if (currentScope.ContainsKey(name))
     {
       DotnetLox.ReportError(name, $"The variable '{name.Lexeme}' is already defined in the scope.");
     }
 
-    _scopes.Peek().Add(name.Lexeme, false);
+    _scopes.Peek().Add(name, new VariableSymanticMeta());
   }
 
   private void Define(Token name)
   {
     if (_scopes.Count == 0) return;
 
-    _scopes.Peek()[name.Lexeme] = true;
+    _scopes.Peek()[name].IsDefined = true;
   }
 
   private void BeginScope()
@@ -289,6 +296,13 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   private void EndScope()
   {
-    _scopes.Pop();
+    var releasedScope = _scopes.Pop();
+
+    foreach (var (name, meta) in releasedScope)
+    {
+      if (meta.IsUsed) continue;
+
+      DotnetLox.ReportError(name, $"Variable '{name.Lexeme}' is declared, but unused.");
+    }
   }
 }

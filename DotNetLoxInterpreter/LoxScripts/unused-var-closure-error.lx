@@ -1,0 +1,16 @@
+// Unused closure variable - captured but never referenced
+// Expect: Variable 'capturedButUnused' is declared, but unused.
+
+fun testClosure() {
+  var capturedButUnused = "never used";
+  var capturedAndUsed = "is used";
+  
+  fun inner() {
+    print capturedAndUsed;
+  }
+  
+  return inner;
+}
+
+var f = testClosure();
+f();

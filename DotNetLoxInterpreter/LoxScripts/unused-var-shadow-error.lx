@@ -1,0 +1,13 @@
+// Unused variable shadowing in nested local scope
+// The inner 'x' declaration shadows the outer 'x' but is never used
+// Expect: Variable 'x' is declared, but unused (the inner one at line 7).
+
+fun testShadow() {
+  var x = "outer";
+  print x; // Use outer x first
+  {
+    var x = "inner"; // This shadows but is never used in this block
+  }
+}
+
+testShadow();

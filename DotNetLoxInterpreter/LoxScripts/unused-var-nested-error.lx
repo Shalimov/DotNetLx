@@ -1,0 +1,20 @@
+// Complex nested scopes with unused variables
+// Expect: Variable 'unused1' is declared, but unused.
+// Expect: Variable 'unused2' is declared, but unused.
+
+fun testNested() {
+  var used = "outer";
+  {
+    var unused1 = "unused in block";
+    var usedInBlock = "used";
+    print usedInBlock + used;
+    
+    {
+      var unused2 = "nested unused";
+      var usedNested = "nested used";
+      print usedNested;
+    }
+  }
+}
+
+testNested();

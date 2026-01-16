@@ -8,6 +8,27 @@ public class Token(TokenType tokenType, string lexeme, object? literal, int line
     public int Line { get; } = line;
     public int Column { get; } = column;
 
+    public override int GetHashCode() => Lexeme.GetHashCode();
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Token other)
+        {
+            return string.Equals(Lexeme, other.Lexeme);
+        }
+
+        return false;
+    }
+
+    // Overload == and != for consistency
+    public static bool operator ==(Token left, Token right)
+    {
+        if (left is null) return right is null;
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Token left, Token right) => !(left == right);
+
     public override string ToString()
     {
         return Literal is not null ? $"{Type}: {Lexeme} {Literal}" : $"{Type}: {Lexeme}";

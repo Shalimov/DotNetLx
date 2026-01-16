@@ -1,0 +1,9 @@
+// Unused function parameters
+// Expect: Variable 'unused1' is declared, but unused.
+// Expect: Variable 'unused2' is declared, but unused.
+
+fun testParams(used, unused1, unused2) {
+  print "Using: " + used;
+}
+
+testParams("hello", "world", "test");

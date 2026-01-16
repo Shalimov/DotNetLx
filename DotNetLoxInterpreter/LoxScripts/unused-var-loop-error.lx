@@ -1,0 +1,11 @@
+// Unused variable in loop scope
+// Expect: Variable 'unused' is declared, but unused.
+
+fun testLoopUnused() {
+  for (var i = 0; i < 3; i = i + 1) {
+    var unused = i * 2; // Computed but never used
+    print "Iteration: " + i;
+  }
+}
+
+testLoopUnused();

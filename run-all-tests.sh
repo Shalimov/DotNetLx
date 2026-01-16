@@ -30,6 +30,7 @@ is_expected_to_fail() {
 
     # Tests expected to fail (error tests and invalid cases)
     if [[ "$filename" == *"-error.lx" ]] || \
+       [[ "$filename" == "unused-var-"* ]] || \
        [[ "$filename" == "break-outside"* ]] || \
        [[ "$filename" == "func-too-"* ]] || \
        [[ "$filename" == "declaration-self-ref.lx" ]] || \

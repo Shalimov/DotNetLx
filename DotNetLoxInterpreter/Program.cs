@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using DotNetLoxInterpreter.Exceptions;
-using DotNetLoxInterpreter.StatycAnalyzers;
+using DotNetLoxInterpreter.StaticAnalyzers;
 
 namespace DotNetLoxInterpreter;
 
