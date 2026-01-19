@@ -2,8 +2,14 @@ namespace DotNetLoxInterpreter.StaticAnalyzers;
 
 public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<ValueTask>
 {
+  private class ScopeData()
+  {
+    public int LastUniqIndex { get; set; } = 0;
+    public Dictionary<Token, VariableSymanticMeta> Variables { get; } = new();
+  }
+
   private readonly IInterpreter _interpreter;
-  private readonly Stack<Dictionary<Token, VariableSymanticMeta>> _scopes;
+  private readonly Stack<ScopeData> _scopes;
   private SymanticEnvironmentFlags _symanticEnvFlags = SymanticEnvironmentFlags.None;
 
   public StaticAnalyzer(IInterpreter interpreter)
@@ -174,7 +180,11 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueTask Visit(Expr.Variable expr)
   {
-    if (_scopes.Count != 0 && _scopes.Peek().TryGetValue(expr.Name, out var variableSymanticMeta) && variableSymanticMeta.IsDefined == false)
+    if (_scopes.Count == 0) return default!;
+
+    var currentScope = _scopes.Peek();
+
+    if (currentScope.Variables.TryGetValue(expr.Name, out var variableSymanticMeta) && variableSymanticMeta.IsDefined == false)
     {
       DotnetLox.ReportError(expr.Name, "Can't read local variable in its own initializer.");
     }
@@ -211,9 +221,9 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     foreach (var scope in _scopes)
     {
-      if (scope.ContainsKey(name))
+      if (scope.Variables.TryGetValue(name, out var variableSymanticMeta))
       {
-        scope[name].IsUsed = true;
+        variableSymanticMeta.IsUsed = true;
         break;
       }
     }
@@ -235,9 +245,9 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     foreach (var scope in _scopes)
     {
-      if (scope.ContainsKey(name))
+      if (scope.Variables.TryGetValue(name, out var variableSymanticMeta))
       {
-        _interpreter.Resolve(expr, i);
+        _interpreter.Resolve(expr, i, variableSymanticMeta.ScopeIndex);
         break;
       }
 
@@ -274,31 +284,35 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     var currentScope = _scopes.Peek();
 
-    if (currentScope.ContainsKey(name))
+    if (currentScope.Variables.ContainsKey(name))
     {
       DotnetLox.ReportError(name, $"The variable '{name.Lexeme}' is already defined in the scope.");
     }
 
-    _scopes.Peek().Add(name, new VariableSymanticMeta());
+    var nextIndex = currentScope.LastUniqIndex;
+
+    currentScope.Variables.Add(name, new VariableSymanticMeta { ScopeIndex = nextIndex });
+    currentScope.LastUniqIndex = nextIndex + 1;
   }
 
   private void Define(Token name)
   {
     if (_scopes.Count == 0) return;
 
-    _scopes.Peek()[name].IsDefined = true;
+    var currentScope = _scopes.Peek();
+    currentScope.Variables[name].IsDefined = true;
   }
 
   private void BeginScope()
   {
-    _scopes.Push(new());
+    _scopes.Push(new ScopeData());
   }
 
   private void EndScope()
   {
     var releasedScope = _scopes.Pop();
 
-    foreach (var (name, meta) in releasedScope)
+    foreach (var (name, meta) in releasedScope.Variables)
     {
       if (meta.IsUsed) continue;
 

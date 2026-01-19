@@ -4,24 +4,7 @@ namespace DotNetLoxInterpreter;
 
 public class Environment
 {
-  private class ValueContainer
-  {
-    private object? _value;
-
-    public bool IsInitialized { get; private set; }
-    public object? Value
-    {
-      get => _value;
-      set
-      {
-        IsInitialized = true;
-        _value = value;
-      }
-    }
-  }
-
-
-  private readonly Dictionary<string, ValueContainer> _env = new();
+  private readonly EnvironmentValueKeeper _envKeeper = new();
 
   public Environment? Enclosing { get; set; }
 
@@ -37,19 +20,20 @@ public class Environment
 
   public void Define(string key)
   {
-    _env.Add(key, new ValueContainer());
+    _envKeeper.Declare(key);
   }
 
   public void Define(string key, object? value)
   {
-    _env.Add(key, new ValueContainer() { Value = value });
+    _envKeeper.Declare(key);
+    _envKeeper[key].Value = value;
   }
 
   public void Assign(Token name, object? value)
   {
-    if (_env.ContainsKey(name.Lexeme))
+    if (_envKeeper.TryGetValueByKey(name.Lexeme, out var container) && container is not null)
     {
-      _env[name.Lexeme].Value = value;
+      container.Value = value;
 
       return;
     }
@@ -64,15 +48,15 @@ public class Environment
     throw new LxRuntimeException($"Undefined variable '{name.Lexeme}'.", name);
   }
 
-  public void AssignAt(int distance, Token name, object? value)
+  public void AssignAt(int distance, int index, object? value)
   {
-    var targetEnv = Ancestor(distance)._env;
-   targetEnv[name.Lexeme].Value = value; 
+    var targetEnv = Ancestor(distance)._envKeeper;
+    targetEnv[index].Value = value;
   }
 
   public object? Get(Token name)
   {
-    if (_env.TryGetValue(name.Lexeme, out var valueContainer))
+    if (_envKeeper.TryGetValueByKey(name.Lexeme, out var valueContainer) && valueContainer is not null)
     {
       if (!valueContainer.IsInitialized)
       {
@@ -94,10 +78,10 @@ public class Environment
   // And all the variables are already marked and counted
   // So if it is called then "variable" exist (Main Assumption)
   // Thus some extra checks are removed
-  public object? GetAt(int distance, Token name)
+  public object? GetAt(int distance, int index, Token name)
   {
-    var targetEnv = Ancestor(distance)._env;
-    var valueContainer = targetEnv[name.Lexeme]!;
+    var targetEnv = Ancestor(distance)._envKeeper;
+    var valueContainer = targetEnv[index]!;
 
     if (!valueContainer.IsInitialized)
     {

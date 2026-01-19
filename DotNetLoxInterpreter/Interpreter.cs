@@ -7,7 +7,7 @@ namespace DotNetLoxInterpreter;
 
 public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ExecutionResult>, IInterpreter
 {
-  private readonly Dictionary<Expr, int?> _locals;
+  private readonly Dictionary<Expr, (int Level, int ScopeIndex)?> _locals;
   private readonly Environment _globals;
   private Environment _environment;
 
@@ -288,9 +288,9 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
   public object? Visit(Expr.Assign expr)
   {
     var value = Evaluate(expr.Value);
-    if (_locals.TryGetValue(expr, out int? distance) && distance.HasValue)
+    if (_locals.TryGetValue(expr, out var location) && location.HasValue)
     {
-      _environment.AssignAt(distance.Value, expr.Name, value);
+      _environment.AssignAt(location.Value.Level, location.Value.ScopeIndex, value);
     }
     else
     {
@@ -345,16 +345,16 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return ExecutionResult.Normal;
   }
 
-  public void Resolve(Expr expr, int depth)
+  public void Resolve(Expr expr, int depth, int index)
   {
-    _locals.TryAdd(expr, depth);
+    _locals.TryAdd(expr, (Level: depth, ScopeIndex: index));
   }
 
   private object? LookupVariable(Token name, Expr expr)
   {
-    if (_locals.TryGetValue(expr, out int? distance) && distance.HasValue)
+    if (_locals.TryGetValue(expr, out var location) && location.HasValue)
     {
-      return _environment.GetAt(distance.Value, name);
+      return _environment.GetAt(location.Value.Level, location.Value.ScopeIndex, name);
     }
     else
     {

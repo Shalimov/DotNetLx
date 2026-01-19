@@ -1,0 +1,289 @@
+// Comprehensive Test for Index-Based Variable Access and Static Analysis
+// Tests the refactored Environment, EnvironmentValueKeeper, and StaticAnalyzer changes
+// Expected: All tests should execute successfully with proper variable indexing
+
+print "=== Index-Based Variable Access Tests ===";
+
+// Test 1: Simple local variable indexing
+print "";
+print "Test 1: Simple local variable indexing";
+{
+  var a = 10;        // index 0
+  var b = 20;        // index 1
+  var c = 30;        // index 2
+  
+  print "a = " + a;  // Expected: 10
+  print "b = " + b;  // Expected: 20
+  print "c = " + c;  // Expected: 30
+}
+
+// Test 2: Nested scopes with independent indices
+print "";
+print "Test 2: Nested scopes with independent indices";
+{
+  var x = 100;       // Scope 1, index 0
+  
+  {
+    var x = 200;     // Scope 2, index 0 (shadow parent)
+    var y = 300;     // Scope 2, index 1
+    
+    print "Inner x = " + x;     // Expected: 200
+    print "Inner y = " + y;     // Expected: 300
+  }
+  
+  print "Outer x = " + x;       // Expected: 100
+}
+
+// Test 3: Variable reassignment uses correct index
+print "";
+print "Test 3: Variable reassignment with correct indexing";
+{
+  var counter = 0;   // index 0
+  
+  counter = counter + 1;
+  print "After first increment: " + counter;  // Expected: 1
+  
+  counter = counter + 1;
+  print "After second increment: " + counter; // Expected: 2
+  
+  counter = 10;
+  print "After reset: " + counter;            // Expected: 10
+}
+
+// Test 4: Multiple scopes maintain separate index spaces
+print "";
+print "Test 4: Separate index spaces per scope";
+{
+  var scope1Var1 = "s1v1";  // Scope 1, index 0
+  var scope1Var2 = "s1v2";  // Scope 1, index 1
+  
+  print "Scope 1 vars: " + scope1Var1 + ", " + scope1Var2;
+  // Expected: Scope 1 vars: s1v1, s1v2
+}
+
+{
+  var scope2Var1 = "s2v1";  // Scope 2, index 0 (same index, different scope)
+  var scope2Var2 = "s2v2";  // Scope 2, index 1
+  
+  print "Scope 2 vars: " + scope2Var1 + ", " + scope2Var2;
+  // Expected: Scope 2 vars: s2v1, s2v2
+}
+
+// Test 5: Function parameters get indices
+print "";
+print "Test 5: Function parameters with correct indexing";
+
+fun addNumbers(a, b, c) {
+  // Parameters: a=index 0, b=index 1, c=index 2
+  var result = a + b + c;  // Local var at index 3
+  return result;
+}
+
+print "addNumbers(5, 10, 15) = " + addNumbers(5, 10, 15);
+// Expected: addNumbers(5, 10, 15) = 30
+
+// Test 6: Closure captures variables with correct indices
+print "";
+print "Test 6: Closures with index-based capture";
+
+fun makeCounter() {
+  var count = 0;     // Outer function local, index 0
+  
+  fun increment() {
+    count = count + 1;  // Accesses parent's index 0
+    return count;
+  }
+  
+  return increment;
+}
+
+var counter1 = makeCounter();
+print "Counter1 first call: " + counter1();    // Expected: 1
+print "Counter1 second call: " + counter1();   // Expected: 2
+print "Counter1 third call: " + counter1();    // Expected: 3
+
+// Test 7: Multiple closures with independent captured variables
+print "";
+print "Test 7: Multiple independent closures";
+
+fun createMultipleCounters() {
+  var counter1 = 0;
+  var counter2 = 100;
+  
+  fun getState() {
+    return counter1 + " " + counter2;
+  }
+  
+  return getState;
+}
+
+var multiState = createMultipleCounters();
+print "State: " + multiState();
+// Expected: State: 0 100
+
+// Test 8: Deeply nested scopes
+print "";
+print "Test 8: Deeply nested scopes with index isolation";
+{
+  var level1 = 1;    // Level 1, index 0
+  
+  {
+    var level2 = 2;  // Level 2, index 0
+    
+    {
+      var level3 = 3;  // Level 3, index 0
+      
+      {
+        var level4 = 4;  // Level 4, index 0
+        
+        print "level1 = " + level1;  // Expected: 1
+        print "level2 = " + level2;  // Expected: 2
+        print "level3 = " + level3;  // Expected: 3
+        print "level4 = " + level4;  // Expected: 4
+      }
+    }
+  }
+}
+
+// Test 9: Loop variables with correct indexing
+print "";
+print "Test 9: Loop variable indexing";
+
+var loopResults = "";
+for (var i = 0; i < 3; i = i + 1) {
+  var squared = i * i;  // New variable per iteration in lexical scope
+  loopResults = loopResults + squared + " ";
+}
+
+print "Loop results: " + loopResults;
+// Expected: Loop results: 0 1 4
+
+// Test 10: Conditional branches with scoped variables
+print "";
+print "Test 10: Conditional branch variable scoping";
+
+var condition = true;
+
+if (condition) {
+  var ifVar = "in if";
+  print ifVar;
+  // Expected: in if
+}
+
+var condition2 = false;
+
+if (condition2) {
+  print "Should not print";
+} else {
+  var elseVar = "in else";
+  print elseVar;
+  // Expected: in else
+}
+
+// Test 11: Complex mixed scopes
+print "";
+print "Test 11: Complex mixed scopes with functions and loops";
+
+fun scopeTest() {
+  var funcVar = 100;
+  
+  for (var i = 0; i < 2; i = i + 1) {
+    var loopVar = i * 10;
+    
+    {
+      var blockVar = loopVar + funcVar;
+      print "i=" + i + ", blockVar=" + blockVar;
+    }
+  }
+  
+  return funcVar;
+}
+
+var testResult = scopeTest();
+print "Final funcVar returned: " + testResult;
+// Expected: i=0, blockVar=100
+//           i=1, blockVar=110
+//           Final funcVar returned: 100
+
+// Test 12: Variable shadowing in nested scopes
+print "";
+print "Test 12: Variable shadowing";
+
+var sharedName = "outer";
+print "Outer: " + sharedName;  // Expected: Outer: outer
+
+{
+  var sharedName = "middle";
+  print "Middle: " + sharedName;  // Expected: Middle: middle
+  
+  {
+    var sharedName = "inner";
+    print "Inner: " + sharedName;  // Expected: Inner: inner
+  }
+  
+  print "Back to middle: " + sharedName;  // Expected: Back to middle: middle
+}
+
+print "Back to outer: " + sharedName;  // Expected: Back to outer: outer
+
+// Test 13: Sequential blocks reuse indices
+print "";
+print "Test 13: Sequential block index reuse";
+
+{
+  var blockVar = "first";
+  print blockVar;
+  // Expected: first
+}
+
+{
+  var blockVar = "second";  // Same variable name, reuses index 0 of new scope
+  print blockVar;
+  // Expected: second
+}
+
+// Test 14: Function with many parameters and locals
+print "";
+print "Test 14: Function with multiple parameters and locals";
+
+fun complexFunction(p1, p2, p3, p4, p5) {
+  // Parameters at indices 0-4
+  var local1 = p1 + p2;     // index 5
+  var local2 = p3 + p4;     // index 6
+  var local3 = p5 + local1 + local2;  // index 7
+  
+  return local3;
+}
+
+var complexResult = complexFunction(1, 2, 3, 4, 5);
+print "Complex function result: " + complexResult;
+// Expected: Complex function result: 20 (1+2 + 3+4 + 5 + (1+2) + (3+4))
+
+// Test 15: Nested function definitions with proper index handling
+print "";
+print "Test 15: Nested function definitions";
+
+fun outer() {
+  var x = 10;
+  
+  fun middle() {
+    var y = 20;
+    
+    fun inner() {
+      var z = 30;
+      return x + y + z;
+    }
+    
+    return inner;
+  }
+  
+  return middle;
+}
+
+var middleFunc = outer();
+var innerFunc = middleFunc();
+print "Nested function result: " + innerFunc();
+// Expected: Nested function result: 60
+
+print "";
+print "=== All index-based variable access tests completed successfully ===";

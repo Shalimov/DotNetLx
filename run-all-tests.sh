@@ -36,18 +36,33 @@ is_expected_to_fail() {
        [[ "$filename" == "declaration-self-ref.lx" ]] || \
        [[ "$filename" == "non-init-var-runtime.lx" ]] || \
        [[ "$filename" == "self-init-"*"-error.lx" ]] || \
-       [[ "$filename" == "function-inside-loop-with-break.lx" ]]; then
-        return 0  # true - expected to fail
-    fi
+       [[ "$filename" == "function-inside-loop-with-break.lx" ]] || \
+       [[ "$filename" == "return-statement-toplevel-error.lx" ]] || \
+       [[ "$filename" == "return-statement-in-block-error.lx" ]] || \
+       [[ "$filename" == "self-init-expression-error.lx" ]] || \
+       [[ "$filename" == "self-init-function-error.lx" ]] || \
+       [[ "$filename" == "self-init-function-call-error.lx" ]] || \
+       [[ "$filename" == "self-init-ternary-error.lx" ]]; then
+         return 0  # true - expected to fail
+     fi
 
-    return 1  # false - expected to succeed
-}
+     return 1  # false - expected to succeed
+ }
 
 # Clear the output file
 > "$OUTPUT_FILE"
 
 echo -e "${BLUE}=== Running Lox Test Files ===${NC}"
 echo "Output will be saved to: $OUTPUT_FILE"
+echo ""
+echo -e "${YELLOW}Test Categories:${NC}"
+echo "  • index-based-variable-access-test.lx     - New: Tests refactored Environment/EnvironmentValueKeeper"
+echo "  • unused-var-*.lx                         - Detects unused variables in scopes"
+echo "  • break-outside-loop-*.lx                 - Validates break statement placement"
+echo "  • return-statement-*.lx                   - Validates return statement placement"
+echo "  • self-init-*.lx                          - Detects self-referential variable initialization"
+echo "  • lexical-scope-variable-extraction.lx    - Tests complex scope extraction"
+echo "  • function-inside-*.lx                    - Tests functions within loops/assignments"
 echo ""
 
 # Counter for statistics
