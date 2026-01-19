@@ -5,7 +5,7 @@ print "=== Return Statement - Valid Edge Cases ===";
 
 // Test 1: Return without value (implicit nil)
 fun noReturn() {
-  var x = 5;
+  // var x = 5;
   return;
 }
 

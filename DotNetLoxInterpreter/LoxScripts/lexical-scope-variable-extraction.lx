@@ -69,8 +69,6 @@ print "Test 3 - Multi-level capture: " + innerFunc(); // Should be "L1-L2-L3"
 
 // Test 4: Loop variable capture (each iteration gets own scope)
 fun makeCounters() {
-  var funcs = nil;
-
   for (var i = 0; i < 3; i = i + 1) {
     var captured = i;
 

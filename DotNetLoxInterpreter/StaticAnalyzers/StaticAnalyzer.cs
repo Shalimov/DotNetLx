@@ -167,7 +167,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueTask Visit(Expr.Lambda expr)
   {
-    Resolve(new Stmt.Function(expr.Name, expr.Parameters, expr.Body));
+    ResolveFunction(new Stmt.Function(expr.Name, expr.Parameters, expr.Body), SymanticEnvironmentFlags.Function);
 
     return default!;
   }
