@@ -18,6 +18,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR/DotNetLxInterpreter"
 SCRIPTS_DIR="$PROJECT_DIR/LxScripts"
 
+# Convert OUTPUT_FILE to absolute path if it's relative
+if [[ "$OUTPUT_FILE" != /* ]]; then
+    OUTPUT_FILE="$SCRIPT_DIR/$OUTPUT_FILE"
+fi
+
 # Check if LxScripts directory exists
 if [ ! -d "$SCRIPTS_DIR" ]; then
     echo -e "${RED}Error: LxScripts directory not found at $SCRIPTS_DIR${NC}"
