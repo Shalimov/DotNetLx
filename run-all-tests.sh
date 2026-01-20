@@ -15,12 +15,12 @@ NC='\033[0m' # No Color
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$SCRIPT_DIR/DotNetLoxInterpreter"
-SCRIPTS_DIR="$PROJECT_DIR/LoxScripts"
+PROJECT_DIR="$SCRIPT_DIR/DotNetLxInterpreter"
+SCRIPTS_DIR="$PROJECT_DIR/LxScripts"
 
-# Check if LoxScripts directory exists
+# Check if LxScripts directory exists
 if [ ! -d "$SCRIPTS_DIR" ]; then
-    echo -e "${RED}Error: LoxScripts directory not found at $SCRIPTS_DIR${NC}"
+    echo -e "${RED}Error: LxScripts directory not found at $SCRIPTS_DIR${NC}"
     exit 1
 fi
 
@@ -52,7 +52,7 @@ is_expected_to_fail() {
 # Clear the output file
 > "$OUTPUT_FILE"
 
-echo -e "${BLUE}=== Running Lox Test Files ===${NC}"
+echo -e "${BLUE}=== Running Lx Test Files ===${NC}"
 echo "Output will be saved to: $OUTPUT_FILE"
 echo ""
 echo -e "${YELLOW}Test Categories:${NC}"

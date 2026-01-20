@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DotNetLxInterpreter": {
+      "commandName": "Project",
+      "commandLineArgs": "./LxScripts/<script-name>.lx"
+    }
+  }
+}

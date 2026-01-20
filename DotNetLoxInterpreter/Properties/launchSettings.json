@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DotNetLoxInterpreter": {
-      "commandName": "Project",
-      "commandLineArgs": "./LoxScripts/<script-name>.lx"
-    }
-  }
-}

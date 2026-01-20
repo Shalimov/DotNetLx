@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "C#: DotNetLoxInterpreter",
+      "name": "C#: DotNetLx",
       "type": "dotnet",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/DotNetLoxInterpreter/DotNetLoxInterpreter.csproj",
-      "launchConfigurationId": "TargetFramework=;DotNetLoxInterpreter"
+      "projectPath": "${workspaceFolder}/DotNetLxInterpreter/DotNetLxInterpreter.csproj",
+      "launchConfigurationId": "TargetFramework=;DotNetLxInterpreter"
     }
   ]
 }

@@ -1,0 +1,11 @@
+using DotNetLxInterpreter.FrontEnd;
+
+namespace DotNetLxInterpreter.Interpretation;
+
+public class InterpreterRepl : Interpreter, IInterpreter
+{
+  public override ExecutionResult Visit(Stmt.Expression expr)
+  {
+    return Visit(new Stmt.Print(expr.Expr));
+  }
+}
