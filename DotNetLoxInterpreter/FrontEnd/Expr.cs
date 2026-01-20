@@ -1,5 +1,5 @@
 /* IMPORTANT: Generated Code Do Not Amend */
-namespace DotNetLoxInterpreter
+namespace DotNetLoxInterpreter.FrontEnd
 {
     public abstract class Expr
     {

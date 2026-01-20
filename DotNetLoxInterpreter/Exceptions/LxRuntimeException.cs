@@ -1,4 +1,4 @@
-using System;
+using DotNetLoxInterpreter.FrontEnd;
 
 namespace DotNetLoxInterpreter.Exceptions;
 

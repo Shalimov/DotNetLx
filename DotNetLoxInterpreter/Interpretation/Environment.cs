@@ -1,6 +1,7 @@
+using DotNetLoxInterpreter.FrontEnd;
 using DotNetLoxInterpreter.Exceptions;
 
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.Interpretation;
 
 public class Environment
 {

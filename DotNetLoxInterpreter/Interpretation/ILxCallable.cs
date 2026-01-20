@@ -1,4 +1,4 @@
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.Interpretation;
 
 public interface ILxCallable
 {

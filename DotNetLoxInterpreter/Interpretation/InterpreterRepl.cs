@@ -1,4 +1,6 @@
-namespace DotNetLoxInterpreter;
+using DotNetLoxInterpreter.FrontEnd;
+
+namespace DotNetLoxInterpreter.Interpretation;
 
 public class InterpreterRepl : Interpreter, IInterpreter
 {

@@ -1,4 +1,4 @@
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.FrontEnd;
 
 public enum TokenType
 {

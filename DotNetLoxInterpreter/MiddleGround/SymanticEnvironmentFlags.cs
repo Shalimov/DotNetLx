@@ -1,4 +1,4 @@
-namespace DotNetLoxInterpreter.StaticAnalyzers;
+namespace DotNetLoxInterpreter.MiddleGround;
 
 public enum SymanticEnvironmentFlags
 {

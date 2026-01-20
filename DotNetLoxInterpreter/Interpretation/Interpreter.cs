@@ -1,9 +1,10 @@
 using System.Collections;
+using DotNetLoxInterpreter.FrontEnd;
 using DotNetLoxInterpreter.Exceptions;
-using DotNetLoxInterpreter.NativeFunctions;
-using static DotNetLoxInterpreter.LxRuntimeAssertions;
+using DotNetLoxInterpreter.Interpretation.NativeFunctions;
+using static DotNetLoxInterpreter.Interpretation.LxRuntimeAssertions;
 
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.Interpretation;
 
 public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<ExecutionResult>, IInterpreter
 {

@@ -1,5 +1,6 @@
+using DotNetLoxInterpreter.FrontEnd;
 
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.Interpretation;
 
 public class LxFunction : ILxCallable
 {

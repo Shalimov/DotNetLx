@@ -1,4 +1,4 @@
-namespace DotNetLoxInterpreter.NativeFunctions;
+namespace DotNetLoxInterpreter.Interpretation.NativeFunctions;
 
 public class LxClockNativeFunction : ILxCallable
 {

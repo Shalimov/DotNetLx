@@ -1,6 +1,8 @@
 ﻿using System.Text;
+using DotNetLoxInterpreter.FrontEnd;
+using DotNetLoxInterpreter.Interpretation;
+using DotNetLoxInterpreter.MiddleGround;
 using DotNetLoxInterpreter.Exceptions;
-using DotNetLoxInterpreter.StaticAnalyzers;
 
 namespace DotNetLoxInterpreter;
 

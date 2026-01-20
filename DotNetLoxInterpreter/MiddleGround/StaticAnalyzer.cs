@@ -1,4 +1,7 @@
-namespace DotNetLoxInterpreter.StaticAnalyzers;
+using DotNetLoxInterpreter.FrontEnd;
+using DotNetLoxInterpreter.Interpretation;
+
+namespace DotNetLoxInterpreter.MiddleGround;
 
 public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<ValueTask>
 {

@@ -1,0 +1,5 @@
+=================================
+-- break-outside-loop-after.lx Output --
+-- EXPECTED: FAIL
+=================================
+

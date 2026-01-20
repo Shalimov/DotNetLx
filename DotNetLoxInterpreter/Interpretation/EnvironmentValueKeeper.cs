@@ -1,4 +1,4 @@
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.Interpretation;
 
 internal class EnvironmentValueKeeper
 {

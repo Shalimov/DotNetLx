@@ -1,4 +1,4 @@
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.FrontEnd;
 
 public class Token(TokenType tokenType, string lexeme, object? literal, int line, int column)
 {

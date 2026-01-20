@@ -721,3 +721,726 @@ Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpr
 
 -- ACTUAL: FAIL
 
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 11; col 5] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+
+-- ACTUAL: FAIL
+
+=================================
+-- break-outside-loop-block.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 9; col 11] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+
+-- ACTUAL: FAIL
+
+=================================
+-- break-outside-loop-function.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 8; col 7] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+[line 7; col 7] Error at 'y': Variable 'y' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- break-outside-loop-if.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 8; col 7] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+[line 7; col 7] Error at 'z': Variable 'z' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- break-outside-loop-toplevel.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 7; col 5] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+
+-- ACTUAL: FAIL
+
+=================================
+-- break-outside.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 4; col 7] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+
+-- ACTUAL: FAIL
+
+=================================
+-- check-nested-return.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+just : 0
+just : 1
+just : 2
+just : 3
+just : 4
+just : 5
+just : 6
+just : 7
+just : 8
+just : 9
+He he he
+He he he
+He he he
+He he he
+He he he
+True
+
+-- ACTUAL: PASS
+
+=================================
+-- clousure-fun-1.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+1
+2
+
+-- ACTUAL: PASS
+
+=================================
+-- declaration-self-ref.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 4; col 11] Error at 'a': Can't read local variable in its own initializer.
+
+-- ACTUAL: FAIL
+
+=================================
+-- fib-funcs.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+0
+1
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+144
+233
+377
+610
+987
+1597
+2584
+4181
+
+-- ACTUAL: PASS
+
+=================================
+-- fib.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+0
+1
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+144
+233
+377
+610
+987
+1597
+2584
+4181
+6765
+
+-- ACTUAL: PASS
+
+=================================
+-- func-call.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+Hello world
+Something is happening here [123]
+Now is seconds 1768906532
+
+-- ACTUAL: PASS
+
+=================================
+-- func-expr.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+-- thrice test --
+1
+2
+3
+-- map test --
+1
+4
+9
+16
+25
+36
+49
+64
+81
+100
+
+-- ACTUAL: PASS
+
+=================================
+-- func-too-little-params.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+Unhandled exception. System.FormatException: Input string was not in a correct format. Failure to parse near offset 7. Expected an ASCII digit.
+   at System.Text.ValueStringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ReadOnlySpan`1 args)
+   at System.IO.StreamWriter.WriteFormatHelper(String format, ReadOnlySpan`1 args, Boolean appendNewLine)
+   at System.IO.StreamWriter.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at System.IO.TextWriter.SyncTextWriter.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at System.Console.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at DotNetLoxInterpreter.DotnetLox.RuntimeError(LxRuntimeException exception) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 89
+   at DotNetLoxInterpreter.Interpretation.Interpreter.Interpret(List`1 stmts) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Interpretation/Interpreter.cs:line 319
+   at DotNetLoxInterpreter.DotnetLox.Run(String script) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 84
+   at DotNetLoxInterpreter.DotnetLox.RunFile(String path) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 50
+   at DotNetLoxInterpreter.DotnetLox.Main(String[] args) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 32
+
+-- ACTUAL: FAIL
+
+=================================
+-- func-too-many-params.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+Unhandled exception. System.FormatException: Input string was not in a correct format. Failure to parse near offset 7. Expected an ASCII digit.
+   at System.Text.ValueStringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ReadOnlySpan`1 args)
+   at System.IO.StreamWriter.WriteFormatHelper(String format, ReadOnlySpan`1 args, Boolean appendNewLine)
+   at System.IO.StreamWriter.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at System.IO.TextWriter.SyncTextWriter.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at System.Console.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at DotNetLoxInterpreter.DotnetLox.RuntimeError(LxRuntimeException exception) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 89
+   at DotNetLoxInterpreter.Interpretation.Interpreter.Interpret(List`1 stmts) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Interpretation/Interpreter.cs:line 319
+   at DotNetLoxInterpreter.DotnetLox.Run(String script) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 84
+   at DotNetLoxInterpreter.DotnetLox.RunFile(String path) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 50
+   at DotNetLoxInterpreter.DotnetLox.Main(String[] args) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 32
+
+-- ACTUAL: FAIL
+
+=================================
+-- function-inside-function-assign.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+=== Function Inside Function - Variable Assignment Test ===
+Test 1 - Inner modifies outer:
+Before increment: 0
+After 1st increment: 1
+After 2nd increment: 2
+Test 2 - Multi-level assignment:
+Before level3: a=1, b=2
+After level3: a=11, b=22, c=33
+Back in level2: a=11, b=22
+Back in level1: a=11
+Test 3 - Returned closure with mutation:
+Add 5: 5
+Add 3: 8
+Add 7: 15
+New accumulator, add 10: 110
+First accumulator still independent, add 2: 17
+Test 4 - Multiple writers to shared variable:
+Initial: IDLE
+After start: RUNNING
+After stop: STOPPED
+After reset: IDLE
+Test 5 - Deep lambda assignment:
+Start value: 100
+After +10: 110
+After +5: 115
+Test 6 - Conditional assignment in nested function:
+Initial: 0
+Process 10: 10
+Process -5: 15
+Process 3: 18
+Process 0: 0
+Test 7 - Loop in nested function:
+Initial sum: 0
+After addRange(1,5): 15
+After addRange(6,10): 55
+Test 8 - Assignment without shadowing:
+Start: outer
+Before assignment: outer
+After assignment: modified by inner
+After inner call: modified by inner
+Test 9 - Object-like closure:
+Alice is 30 years old
+Alice is 31 years old
+Bob is 31 years old
+Bob is 25 years old
+=== All Function Assignment Tests Complete ===
+
+-- ACTUAL: PASS
+
+=================================
+-- function-inside-loop-valid.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+=== Function Inside Loop - Valid Cases (No Break) ===
+Test 1 - Function captures loop variable:
+Captured: 0
+Captured: 1
+Captured: 2
+Calling last captured function:
+Captured: 2
+Test 2 - Function modifies outer variable:
+Sum after loop: 15
+Test 3 - Multiple functions per iteration:
+first-0 and second-0
+first-1 and second-1
+Test 4 - Nested loops with function:
+Outer: 0, Inner: 0
+Outer: 0, Inner: 1
+Outer: 1, Inner: 0
+Outer: 1, Inner: 1
+Test 5 - Function in while loop:
+While iteration: 0
+While iteration: 1
+While iteration: 2
+Test 6 - Lambda inside loop:
+Sum of squares 1-3: 14
+Test 7 - Function returned from loop:
+2 * 5 = 10
+3 * 5 = 15
+=== All Valid Function-In-Loop Tests Complete ===
+
+-- ACTUAL: PASS
+
+=================================
+-- function-inside-loop-with-break.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 14; col 9] Error at 'break': Statment 'break' is not allowed outside of a loop's body.
+
+-- ACTUAL: FAIL
+
+=================================
+-- index-based-variable-access-test.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+=== Index-Based Variable Access Tests ===
+
+Test 1: Simple local variable indexing
+a = 10
+b = 20
+c = 30
+
+Test 2: Nested scopes with independent indices
+Inner x = 200
+Inner y = 300
+Outer x = 100
+
+Test 3: Variable reassignment with correct indexing
+After first increment: 1
+After second increment: 2
+After reset: 10
+
+Test 4: Separate index spaces per scope
+Scope 1 vars: s1v1, s1v2
+Scope 2 vars: s2v1, s2v2
+
+Test 5: Function parameters with correct indexing
+addNumbers(5, 10, 15) = 30
+
+Test 6: Closures with index-based capture
+Counter1 first call: 1
+Counter1 second call: 2
+Counter1 third call: 3
+
+Test 7: Multiple independent closures
+State: 0 100
+
+Test 8: Deeply nested scopes with index isolation
+level1 = 1
+level2 = 2
+level3 = 3
+level4 = 4
+
+Test 9: Loop variable indexing
+Loop results: 0 1 4 
+
+Test 10: Conditional branch variable scoping
+in if
+in else
+
+Test 11: Complex mixed scopes with functions and loops
+i=0, blockVar=100
+i=1, blockVar=110
+Final funcVar returned: 100
+
+Test 12: Variable shadowing
+Outer: outer
+Middle: middle
+Inner: inner
+Back to middle: middle
+Back to outer: outer
+
+Test 13: Sequential block index reuse
+first
+second
+
+Test 14: Function with multiple parameters and locals
+Complex function result: 15
+
+Test 15: Nested function definitions
+Nested function result: 60
+
+=== All index-based variable access tests completed successfully ===
+
+-- ACTUAL: PASS
+
+=================================
+-- initial-expressions.script.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+lox is a lang
+2,5
+True
+False
+nil
+1__hello-world__3
+
+-- ACTUAL: PASS
+
+=================================
+-- lexical-scope-variable-extraction.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+=== Lexical Scope - Variable Extraction Test ===
+Test 1 - Basic capture: outer
+Test 2 - Shared scope: inc:1,get:1
+Test 2 - Shared scope: inc:2,get:2
+Test 3 - Multi-level capture: CHANGED-L2-L3
+Test 4 - Loop variable capture:
+Counter: 0
+Counter: 1
+Counter: 2
+Test 5 - Mutable capture:
+Initial: 10
+After set: 20
+Test 6 - Shadow vs Capture: global vs shadowed
+=== All Lexical Scope Tests Complete ===
+
+-- ACTUAL: PASS
+
+=================================
+-- loops-with-jumps.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+I expect total iter to be 8 and it is [8]
+
+-- ACTUAL: PASS
+
+=================================
+-- loops.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+Itrate inside the loop 0
+Itrate inside the loop 1
+Itrate inside the loop 2
+Wow wow wow
+Itrate inside the loop 3
+Itrate inside the loop 4
+Wow wow wow
+Wolfs are tughs:
+Wow wow wow
+Wow wow wow
+Wow wow wow
+Wow wow wow
+Wow wow wow
+
+-- ACTUAL: PASS
+
+=================================
+-- non-init-var-runtime.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+assigned
+Unhandled exception. System.FormatException: Input string was not in a correct format. Failure to parse near offset 7. Expected an ASCII digit.
+   at System.Text.ValueStringBuilder.AppendFormatHelper(IFormatProvider provider, String format, ReadOnlySpan`1 args)
+   at System.IO.StreamWriter.WriteFormatHelper(String format, ReadOnlySpan`1 args, Boolean appendNewLine)
+   at System.IO.StreamWriter.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at System.IO.TextWriter.SyncTextWriter.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at System.Console.WriteLine(String format, Object arg0, Object arg1, Object arg2)
+   at DotNetLoxInterpreter.DotnetLox.RuntimeError(LxRuntimeException exception) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 89
+   at DotNetLoxInterpreter.Interpretation.Interpreter.Interpret(List`1 stmts) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Interpretation/Interpreter.cs:line 319
+   at DotNetLoxInterpreter.DotnetLox.Run(String script) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 84
+   at DotNetLoxInterpreter.DotnetLox.RunFile(String path) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 50
+   at DotNetLoxInterpreter.DotnetLox.Main(String[] args) in /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Program.cs:line 32
+
+-- ACTUAL: FAIL
+
+=================================
+-- return-statement-in-block-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 8; col 8] Error at 'return': Can't return from top-level code.
+
+-- ACTUAL: FAIL
+
+=================================
+-- return-statement-toplevel-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 7; col 6] Error at 'return': Can't return from top-level code.
+
+-- ACTUAL: FAIL
+
+=================================
+-- return-statement-valid-cases.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+=== Return Statement - Valid Edge Cases ===
+Test 1 - Return without value: nil
+Test 2 - Nested block return: positive
+Test 2 - Nested block return: negative
+Test 2 - Nested block return: zero
+Test 3 - Multiple returns: two
+Test 3 - Multiple returns: other
+Test 4 - Deep nested return: 11
+Test 5 - While loop return: 42
+Test 6 - Complex expression return: 17
+Test 7 - Closure return: 42
+Test 8 - Function return: 15
+Test 9 - Early return: negative
+Test 9 - Early return: 3
+Test 10 - Complex control flow: found at 7
+Test 11 - Ternary return: positive
+Test 11 - Ternary return: non-positive
+Test 12 - For loop return: 2
+Test 13 - Return function call: 100
+Inner returned: inner
+Test 14 - Nested returns: outer
+Before return
+Test 15 - Return stops execution: returned
+=== All Valid Return Tests Complete ===
+
+-- ACTUAL: PASS
+
+=================================
+-- scoping.script.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+shadow warrior lvl 2 he he he shadow is my goal making and backingTrue1
+shadow warrior lvl 1 something similar 1 making and backingTrue1
+local var become a shadow warrior making and backingTrue1
+local var
+something similar 1
+making and backingTrue1
+
+-- ACTUAL: PASS
+
+=================================
+-- self-init-expression-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 9; col 27] Error at 'inner': Can't read local variable in its own initializer.
+
+-- ACTUAL: FAIL
+
+=================================
+-- self-init-function-call-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 11; col 18] Error at 'y': Can't read local variable in its own initializer.
+
+-- ACTUAL: FAIL
+
+=================================
+-- self-init-function-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 7; col 11] Error at 'x': Can't read local variable in its own initializer.
+
+-- ACTUAL: FAIL
+
+=================================
+-- self-init-simple-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 9; col 11] Error at 'a': Can't read local variable in its own initializer.
+
+-- ACTUAL: FAIL
+
+=================================
+-- self-init-ternary-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 7; col 18] Error at 'x': Can't read local variable in its own initializer.
+
+-- ACTUAL: FAIL
+
+=================================
+-- self-init-valid-cases.lx Output --
+-- EXPECTED: PASS
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+=== Self-Initialization - Valid Cases ===
+Test 1 - Outer 'a': 1
+Test 1 - Inner 'b' (from outer 'a'): 1
+Test 1 - Inner 'a' (shadows outer): 2
+Test 1 - Back to outer 'a': 1
+Test 2 - Function 'y' from outer 'x': 10
+Test 2 - Function 'x' (shadows outer): 20
+Test 2 - Outer 'x' unchanged: 10
+Test 3 - Level 2: L1
+Test 3 - Level 3: L1
+Test 3 - Level 4: L1
+Test 4 - n = m * 2: 10
+Test 4 - p = n + m: 15
+Test 5 - Ternary with outer: 100
+Test 6 - Local from param: 42
+Test 6 - param2: 43
+Test 7 - Transformed: 70
+Test 8 - Sequential: first=1, second=1, third=2
+Test 9 - Loop i: 0
+Test 9 - Loop i: 1
+Test 9 - Loop i: 2
+Test 10 - Declared then assigned: 5
+Test 11 - Captured: outer value
+Test 11 - Shadowed: inner value
+Test 12 - Sum: 60
+Test 12 - Local sum with shadow: 120
+=== All Valid Self-Init Tests Complete ===
+
+-- ACTUAL: PASS
+
+=================================
+-- unused-var-closure-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 5; col 23] Error at 'capturedButUnused': Variable 'capturedButUnused' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- unused-var-loop-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 6; col 14] Error at 'unused': Variable 'unused' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- unused-var-nested-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 13; col 17] Error at 'unused2': Variable 'unused2' is declared, but unused.
+[line 8; col 15] Error at 'unused1': Variable 'unused1' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- unused-var-params-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 5; col 28] Error at 'unused1': Variable 'unused1' is declared, but unused.
+[line 5; col 37] Error at 'unused2': Variable 'unused2' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- unused-var-shadow-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 9; col 9] Error at 'x': Variable 'x' is declared, but unused.
+
+-- ACTUAL: FAIL
+
+=================================
+-- unused-var-simple-error.lx Output --
+-- EXPECTED: FAIL
+=================================
+
+Using launch settings from /Users/igorshalimov/Projects/Personal/CraftingInterpreters/DotNetLoxInterpreter/DotNetLoxInterpreter/Properties/launchSettings.json...
+[line 5; col 12] Error at 'unused': Variable 'unused' is declared, but unused.
+
+-- ACTUAL: FAIL
+

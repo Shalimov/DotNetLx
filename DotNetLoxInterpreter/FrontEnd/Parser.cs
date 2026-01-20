@@ -1,6 +1,6 @@
 using DotNetLoxInterpreter.Exceptions;
 
-namespace DotNetLoxInterpreter;
+namespace DotNetLoxInterpreter.FrontEnd;
 
 /// <summary>
 /// Descent Parsing
