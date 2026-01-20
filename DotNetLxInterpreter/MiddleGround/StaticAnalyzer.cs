@@ -23,6 +23,14 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   #region Statment Visit
 
+  public ValueType Visit(Stmt.Class clsStmt)
+  {
+    Declare(clsStmt.Name);
+    Define(clsStmt.Name);
+
+    return default!; 
+  }
+
   public ValueType Visit(Stmt.Function stmt)
   {
     Declare(stmt.Name);

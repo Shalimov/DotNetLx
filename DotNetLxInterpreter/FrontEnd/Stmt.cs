@@ -5,6 +5,7 @@ namespace DotNetLxInterpreter.FrontEnd
     {
         public interface IVisitorStmt<out TR>
         {
+            public TR Visit(Class expr);
             public TR Visit(Function expr);
             public TR Visit(Block expr);
             public TR Visit(If expr);
@@ -14,6 +15,23 @@ namespace DotNetLxInterpreter.FrontEnd
             public TR Visit(Break expr);
             public TR Visit(Return expr);
             public TR Visit(Var expr);
+        }
+
+        public class Class : Stmt
+        {
+            public Token Name { get; set; }
+            public List<Function> Methods { get; set; }
+
+            public Class(Token name, List<Function> methods)
+            {
+                Name = name;
+                Methods = methods;
+            }
+
+            public override TR Accept<TR>(IVisitorStmt<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
         }
 
         public class Function : Stmt

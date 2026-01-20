@@ -1,8 +1,11 @@
 program        -> declaration* EOF ; 
 
-declaration    -> varDecl
+declaration    -> classDecl
+                | varDecl
                 | funDecl
                 | statement ;
+
+classDecl      -> "class" IDENTIFIER "{" function* "}" ;
 
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 

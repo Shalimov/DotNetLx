@@ -1,0 +1,7 @@
+class InitialTest {
+  serveOn(walkThisWay) {
+    return "Something" + walkThisWay;
+  }
+}
+
+print InitialTest;

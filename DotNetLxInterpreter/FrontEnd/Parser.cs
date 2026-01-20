@@ -40,6 +40,7 @@ public class Parser
   {
     try
     {
+      if (Match(TokenType.CLASS)) return ClassDecl();
       if (Match(TokenType.FUN)) return FunDecl("function");
       if (Match(TokenType.VAR)) return VarDecl();
 
@@ -51,6 +52,24 @@ public class Parser
       // DotNetLx.ReportError(error.Token, error.Message);
       return null;
     }
+  }
+
+  private Stmt ClassDecl()
+  {
+    var name = Consume(TokenType.IDENTIFIER, "Expected class name.");
+
+    Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
+
+    List<Stmt.Function> methods = [];
+
+    while (!(Check(TokenType.RIGHT_BRACE) || IsAtEnd()))
+    {
+      methods.Add((Stmt.Function)FunDecl("method"));
+    }
+
+    Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
+
+    return new Stmt.Class(name, methods);
   }
 
   private Stmt FunDecl(string kind)

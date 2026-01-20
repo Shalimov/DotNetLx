@@ -88,6 +88,15 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return ExecutionResult.Normal;
   }
 
+  public ExecutionResult Visit(Stmt.Class clsDecl)
+  {
+    _environment.Define(clsDecl.Name.Lexeme, null);
+    var lxClass = new LxClass(clsDecl.Name.Lexeme);
+    _environment.Assign(clsDecl.Name, lxClass);
+
+    return ExecutionResult.Normal;
+  }
+
   public ExecutionResult Visit(Stmt.Function funDecl)
   {
     _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl, _environment));
