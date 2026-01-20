@@ -23,6 +23,7 @@ Generator.DeclareAstInFile(output, "Expr", [
     ]);
 
 Generator.DeclareAstInFile(output, "Stmt", [
+        "Class      : Token name, List<Function> methods",
         "Function   : Token name, List<Token> parameters, List<Stmt> body",
         "Block      : List<Stmt> statements",
         "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
