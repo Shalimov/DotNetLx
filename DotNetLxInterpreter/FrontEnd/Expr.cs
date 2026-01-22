@@ -12,6 +12,8 @@ namespace DotNetLxInterpreter.FrontEnd
             public TR Visit(Literal expr);
             public TR Visit(Unary expr);
             public TR Visit(Call expr);
+            public TR Visit(Get expr);
+            public TR Visit(Set expr);
             public TR Visit(Lambda expr);
             public TR Visit(Variable expr);
             public TR Visit(Assign expr);
@@ -136,6 +138,42 @@ namespace DotNetLxInterpreter.FrontEnd
                 Callee = callee;
                 TraceParen = traceparen;
                 Arguments = arguments;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Get : Expr
+        {
+            public Expr Target { get; set; }
+            public Token Name { get; set; }
+
+            public Get(Expr target, Token name)
+            {
+                Target = target;
+                Name = name;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Set : Expr
+        {
+            public Expr Target { get; set; }
+            public Token Name { get; set; }
+            public Expr Value { get; set; }
+
+            public Set(Expr target, Token name, Expr value)
+            {
+                Target = target;
+                Name = name;
+                Value = value;
             }
 
             public override TR Accept<TR>(IVisitorExpr<TR> visitor)

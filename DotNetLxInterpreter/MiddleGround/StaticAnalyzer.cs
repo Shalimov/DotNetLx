@@ -3,7 +3,7 @@ using DotNetLxInterpreter.Interpretation;
 
 namespace DotNetLxInterpreter.MiddleGround;
 
-public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<ValueTask>
+public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<ValueType>
 {
   private class ScopeData()
   {
@@ -126,7 +126,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   #region Expression Visit
 
-  public ValueTask Visit(Expr.Ternary expr)
+  public ValueType Visit(Expr.Ternary expr)
   {
     Resolve(expr.Left);
     Resolve(expr.Mid);
@@ -135,7 +135,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
-  public ValueTask Visit(Expr.Binary expr)
+  public ValueType Visit(Expr.Binary expr)
   {
     Resolve(expr.Left);
     Resolve(expr.Right);
@@ -143,7 +143,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
-  public ValueTask Visit(Expr.Logical expr)
+  public ValueType Visit(Expr.Logical expr)
   {
     Resolve(expr.Left);
     Resolve(expr.Right);
@@ -151,26 +151,26 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
-  public ValueTask Visit(Expr.Grouping expr)
+  public ValueType Visit(Expr.Grouping expr)
   {
     Resolve(expr.Expr);
 
     return default!;
   }
 
-  public ValueTask Visit(Expr.Literal expr)
+  public ValueType Visit(Expr.Literal expr)
   {
     return default!;
   }
 
-  public ValueTask Visit(Expr.Unary expr)
+  public ValueType Visit(Expr.Unary expr)
   {
     Resolve(expr.Right);
 
     return default!;
   }
 
-  public ValueTask Visit(Expr.Call expr)
+  public ValueType Visit(Expr.Call expr)
   {
     Resolve(expr.Callee);
 
@@ -182,14 +182,29 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
-  public ValueTask Visit(Expr.Lambda expr)
+  public ValueType Visit(Expr.Set expr)
+  {
+    Resolve(expr.Value);
+    Resolve(expr.Target);
+
+    return default!;
+  }
+
+  public ValueType Visit(Expr.Get expr)
+  {
+    Resolve(expr.Target);
+
+    return default!;
+  }
+
+  public ValueType Visit(Expr.Lambda expr)
   {
     ResolveFunction(new Stmt.Function(expr.Name, expr.Parameters, expr.Body), SymanticEnvironmentFlags.Function);
 
     return default!;
   }
 
-  public ValueTask Visit(Expr.Variable expr)
+  public ValueType Visit(Expr.Variable expr)
   {
     if (_scopes.Count == 0) return default!;
 
@@ -206,7 +221,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
-  public ValueTask Visit(Expr.Assign expr)
+  public ValueType Visit(Expr.Assign expr)
   {
     Resolve(expr.Value);
     ResolveLocal(expr, expr.Name);

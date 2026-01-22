@@ -318,6 +318,10 @@ public class Parser
       {
         return new Expr.Assign(variable.Name, value);
       }
+      else if (expr is Expr.Get getter)
+      {
+        return new Expr.Set(getter.Target, getter.Name, value);
+      }
 
       Error(equals, "Invalid assignment target.");
     }
@@ -470,6 +474,11 @@ public class Parser
       if (Match(TokenType.LEFT_PAREN))
       {
         callee = FinalizeCall(callee);
+      }
+      else if (Match(TokenType.DOT))
+      {
+        var name = Consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+        callee = new Expr.Get(callee, name);
       }
       else
       {

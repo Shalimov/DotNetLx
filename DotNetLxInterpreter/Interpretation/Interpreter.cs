@@ -275,6 +275,33 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return null;
   }
 
+  public object? Visit(Expr.Set expr)
+  {
+    var target = Evaluate(expr.Target);
+
+    if (target is not LxInstance lxInstance)
+    {
+      throw new LxRuntimeException("Only instances can have fields.", expr.Name);
+    }
+
+    var value = Evaluate(expr.Value);
+    lxInstance[expr.Name] = value;
+
+    return value;
+  }
+
+  public object? Visit(Expr.Get expr)
+  {
+    var target = Evaluate(expr.Target);
+
+    if (target is LxInstance lxInstance)
+    {
+      return lxInstance[expr.Name];
+    }
+
+    throw new LxRuntimeException("Only instances can have fields.", expr.Name);
+  }
+
   public object? Visit(Expr.Call expr)
   {
     var callee = Evaluate(expr.Callee);

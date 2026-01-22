@@ -1,7 +1,17 @@
-class InitialTest {
-  serveOn(walkThisWay) {
-    return "Something" + walkThisWay;
-  }
+class WeAreLegion {
+  
 }
 
-print InitialTest;
+print WeAreLegion;
+
+var legionInstance = WeAreLegion();
+
+print "Legion is here: " + legionInstance;
+
+legionInstance.name = "1000 Suns";
+legionInstance.weapon = "golden axe";
+legionInstance.health = 1000000;
+
+print "Name of it: " + legionInstance.name;
+print "It weilds: " + legionInstance.weapon;
+print "I'm imortal HP: " + legionInstance.health; 

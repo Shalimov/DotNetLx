@@ -40,7 +40,7 @@ exprStmt       -> expression ";" ;
 expression     -> commaseq ;
 
 commaseq       -> assignment ( "," assignment )* ;
-assignment     -> IDENTIFIER "=" assignment | logicOr ;
+assignment     -> ( call "." )? IDENTIFIER "=" assignment | logicOr ;
 
 logicOr       -> logicAnd "or" logicOr ;
 logicAnd      -> ternary "and" ternary ;
@@ -54,7 +54,7 @@ term           -> factor ( ( "-" | "+" ) factor )* ;
 factor         -> unary ( ( "/" | "*" ) unary )* ;
 unary          -> ( "!" | "-" ) unary | call ;
 
-call           -> primary ( "(" arguments? ")" )* ;
+call           -> primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 arguments      -> assignment ( "," assignment )* ;
 
 primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda ;
