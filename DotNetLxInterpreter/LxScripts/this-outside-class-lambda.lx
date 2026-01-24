@@ -1,0 +1,8 @@
+// This Outside Class - Inside Lambda Error
+// Should trigger: "Expect 'this' only inside class methods."
+
+var getLambda = fun() {
+  return this; // ERROR: 'this' inside lambda, but not inside a class method
+};
+
+getLambda();

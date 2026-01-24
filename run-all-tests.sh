@@ -47,7 +47,8 @@ is_expected_to_fail() {
        [[ "$filename" == "self-init-expression-error.lx" ]] || \
        [[ "$filename" == "self-init-function-error.lx" ]] || \
        [[ "$filename" == "self-init-function-call-error.lx" ]] || \
-       [[ "$filename" == "self-init-ternary-error.lx" ]]; then
+       [[ "$filename" == "self-init-ternary-error.lx" ]] || \
+       [[ "$filename" == "this-outside-class-"* ]]; then
          return 0  # true - expected to fail
      fi
 
@@ -66,6 +67,7 @@ echo "  • unused-var-*.lx                         - Detects unused variables i
 echo "  • break-outside-loop-*.lx                 - Validates break statement placement"
 echo "  • return-statement-*.lx                   - Validates return statement placement"
 echo "  • self-init-*.lx                          - Detects self-referential variable initialization"
+echo "  • this-outside-class-*.lx                 - Validates 'this' usage only inside class methods"
 echo "  • lexical-scope-variable-extraction.lx    - Tests complex scope extraction"
 echo "  • function-inside-*.lx                    - Tests functions within loops/assignments"
 echo ""

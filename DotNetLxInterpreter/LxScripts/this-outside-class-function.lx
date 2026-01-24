@@ -1,0 +1,8 @@
+// This Outside Class - Inside Regular Function Error
+// Should trigger: "Expect 'this' only inside class methods."
+
+fun notAMethod() {
+  print this; // ERROR: 'this' used inside a regular function, not a method
+}
+
+notAMethod();

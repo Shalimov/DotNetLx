@@ -28,6 +28,9 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     Declare(clsStmt.Name);
     Define(clsStmt.Name);
 
+    var enclosingSurroundings = _symanticEnvFlags;
+    _symanticEnvFlags |= SymanticEnvironmentFlags.Class;
+
     BeginScope();
 
     var thisToken = new Token(TokenType.THIS, "this", null, clsStmt.Name.Line, clsStmt.Name.Column);
@@ -42,6 +45,8 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     }
 
     EndScope();
+
+    _symanticEnvFlags = enclosingSurroundings;
 
     return default!; 
   }
@@ -214,6 +219,13 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Expr.This expr)
   {
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Class) == SymanticEnvironmentFlags.None)
+    {
+      DotNetLx.ReportError(expr.Keyword, "Expect 'this' only inside class methods.");
+
+      return default!;
+    }
+
     MarkAsUsed(expr.Keyword);
     ResolveLocal(expr, expr.Keyword);
 

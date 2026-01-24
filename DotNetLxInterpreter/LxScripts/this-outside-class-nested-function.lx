@@ -1,0 +1,11 @@
+// This Outside Class - Inside Nested Function Error
+// Should trigger: "Expect 'this' only inside class methods."
+
+fun outer() {
+  fun inner() {
+    return this; // ERROR: 'this' in nested function, still not in a class
+  }
+  return inner();
+}
+
+outer();

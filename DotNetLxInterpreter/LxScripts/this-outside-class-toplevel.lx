@@ -1,0 +1,6 @@
+// This Outside Class - Top Level Error
+// Should trigger: "Expect 'this' only inside class methods."
+
+print "Testing 'this' at top level";
+
+var x = this; // ERROR: 'this' used at top level, not inside a class method
