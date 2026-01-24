@@ -1,0 +1,25 @@
+// Test: Class initializer called via constructor
+// Expected: Should create instance with initialized fields
+
+class Person {
+  init(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  greet() {
+    print "Hello, I'm " + this.name + " and I'm " + this.age + " years old.";
+  }
+}
+
+var person = Person("Alice", 30);
+
+print "Created person:";
+print "Name: " + person.name;
+print "Age: " + person.age;
+
+person.greet();
+
+// Test with multiple instances
+var person2 = Person("Bob", 25);
+print "Second person: " + person2.name;

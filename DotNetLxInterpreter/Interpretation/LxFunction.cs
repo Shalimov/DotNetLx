@@ -6,11 +6,13 @@ public class LxFunction : ILxCallable
 {
   private readonly Stmt.Function _function;
   private readonly Environment _clousre;
+  private readonly bool _isInitializer;
 
-  public LxFunction(Stmt.Function function, Environment clousre)
+  public LxFunction(Stmt.Function function, Environment clousre, bool isInitializer)
   {
     _function = function;
     _clousre = clousre;
+    _isInitializer = isInitializer;
   }
 
   public int Arity => _function.Parameters.Count;
@@ -20,7 +22,7 @@ public class LxFunction : ILxCallable
     var enclosing = new Environment(_clousre);
     enclosing.Define("this", instance);
 
-    return new LxFunction(_function, enclosing);
+    return new LxFunction(_function, enclosing, _isInitializer);
   }
 
   public object? Call(IInterpreter interpreter, IEnumerable<object?> arguments)
@@ -33,6 +35,11 @@ public class LxFunction : ILxCallable
     }
 
     var executionResult = interpreter.ExecuteBlock(_function.Body, environment);
+
+    if (_isInitializer)
+    {
+      return _clousre.GetAt(0, 0, new Token(TokenType.THIS, "this", null, _function.Name.Line, _function.Name.Column));
+    }
 
     return executionResult.Payload;
   }

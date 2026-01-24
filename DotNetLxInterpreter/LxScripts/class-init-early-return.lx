@@ -1,0 +1,29 @@
+// Test: Early return (without value) in initializer
+// Expected: Should return the instance, not nil
+
+class Conditional {
+  init(shouldSkip) {
+    this.initialized = false;
+
+    if (shouldSkip) {
+      print "Skipping full initialization";
+      return;
+    }
+
+    this.initialized = true;
+    this.data = "fully initialized";
+    print "Full initialization complete";
+  }
+}
+
+print "--- Test 1: Full initialization ---";
+var full = Conditional(false);
+print "Instance: " + full;
+print "Initialized: " + full.initialized;
+print "Data: " + full.data;
+
+print "";
+print "--- Test 2: Early return ---";
+var partial = Conditional(true);
+print "Instance: " + partial;
+print "Initialized: " + partial.initialized;

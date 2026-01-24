@@ -34,13 +34,16 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     BeginScope();
 
     var thisToken = new Token(TokenType.THIS, "this", null, clsStmt.Name.Line, clsStmt.Name.Column);
-    
+
     Declare(thisToken);
     Define(thisToken);
 
     foreach (var method in clsStmt.Methods)
     {
-      var declarationType = SymanticEnvironmentFlags.Method;
+      var declarationType = method.Name.Lexeme.Equals("init") ?
+        SymanticEnvironmentFlags.Initializer :
+        SymanticEnvironmentFlags.Method;
+
       ResolveFunction(method, declarationType);
     }
 
@@ -48,7 +51,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     _symanticEnvFlags = enclosingSurroundings;
 
-    return default!; 
+    return default!;
   }
 
   public ValueType Visit(Stmt.Function stmt)
@@ -83,7 +86,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
   {
     var enclosingSurroundings = _symanticEnvFlags;
     _symanticEnvFlags |= SymanticEnvironmentFlags.Loop;
-    
+
     Resolve(stmt.Condition);
     Resolve(stmt.WhileBody);
 
@@ -121,6 +124,10 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     if ((_symanticEnvFlags & SymanticEnvironmentFlags.Callable) == SymanticEnvironmentFlags.None)
     {
       DotNetLx.ReportError(stmt.Keyword, "Can't return from top-level code.");
+    }
+    else if (stmt.Value is not null && (_symanticEnvFlags & SymanticEnvironmentFlags.Initializer) != SymanticEnvironmentFlags.None)
+    {
+      DotNetLx.ReportError(stmt.Keyword, "Can't return a value from an initializer.");
     }
 
     if (stmt.Value is not null) Resolve(stmt.Value);

@@ -1,0 +1,11 @@
+// Test: Return with expression in initializer
+// Expected: Should produce static analysis error "Can't return a value from an initializer."
+
+class BadInit {
+  init() {
+    this.value = 42;
+    return "this should not be allowed";
+  }
+}
+
+var bad = BadInit();

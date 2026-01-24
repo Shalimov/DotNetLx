@@ -94,7 +94,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     var methods = clsDecl.Methods.ToDictionary(
       method => method.Name.Lexeme,
-      method => new LxFunction(method, _environment));
+      method => new LxFunction(method, _environment, method.Name.Lexeme.Equals("init")));
 
     var lxClass = new LxClass(clsDecl.Name.Lexeme, methods);
     _environment.Assign(clsDecl.Name, lxClass);
@@ -104,7 +104,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
   public ExecutionResult Visit(Stmt.Function funDecl)
   {
-    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl, _environment));
+    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl, _environment, isInitializer: false));
 
     return ExecutionResult.Normal;
   }
@@ -344,7 +344,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return value;
   }
 
-  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(lambda.Name, lambda.Parameters, lambda.Body), _environment);
+  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(lambda.Name, lambda.Parameters, lambda.Body), _environment, isInitializer: false);
 
   #endregion
 

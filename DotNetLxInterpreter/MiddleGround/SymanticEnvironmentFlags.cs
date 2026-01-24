@@ -6,6 +6,8 @@ public enum SymanticEnvironmentFlags
   Loop = 0b_0000_0001,
   Function = 0b_0000_0010,
   Method = 0b_0000_0100,
-  Class = 0b_0000_1000,
-  Callable = Method | Function
+  Initializer = 0b_0000_1000,
+  Class = 0b_1000_0000,
+
+  Callable = Method | Function | Initializer
 }

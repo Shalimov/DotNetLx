@@ -1,0 +1,27 @@
+// Test: Calling init() separately after instance creation
+// Expected: Should re-initialize the instance fields
+
+class Counter {
+  init(start) {
+    this.count = start;
+    print "Initialized counter to: " + this.count;
+  }
+
+  increment() {
+    this.count = this.count + 1;
+    print "Count is now: " + this.count;
+  }
+}
+
+var counter = Counter(0);
+counter.increment();
+counter.increment();
+counter.increment();
+
+print "Before re-init: " + counter.count;
+
+// Call init again to reset
+counter.init(100);
+
+print "After re-init: " + counter.count;
+counter.increment();

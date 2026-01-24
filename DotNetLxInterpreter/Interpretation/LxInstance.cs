@@ -28,7 +28,7 @@ public class LxInstance(LxClass baseClass)
 
     set
     {
-      _fields.Add(name.Lexeme, value);
+      _fields[name.Lexeme] = value;
     }
   }
 
