@@ -1,5 +1,7 @@
 class WeAreLegion {
-  
+  sayMyName() {
+    print "Hey, here is my name: " + this;
+  } 
 }
 
 print WeAreLegion;
@@ -15,3 +17,5 @@ legionInstance.health = 1000000;
 print "Name of it: " + legionInstance.name;
 print "It weilds: " + legionInstance.weapon;
 print "I'm imortal HP: " + legionInstance.health; 
+
+legionInstance.sayMyName();

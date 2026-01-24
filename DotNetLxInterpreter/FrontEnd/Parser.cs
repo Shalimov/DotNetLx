@@ -77,9 +77,9 @@ public class Parser
     var name = Consume(TokenType.IDENTIFIER, $"Expected name to be defined for a {kind} declaration.");
 
     Consume(TokenType.LEFT_PAREN, "Expect '(' before parameters definition.");
-    
+
     List<Token> parameters = [];
-    
+
     if (!Check(TokenType.RIGHT_PAREN)) do
     {
       parameters.Add(Consume(TokenType.IDENTIFIER, "Expect parameter name."));
@@ -94,7 +94,7 @@ public class Parser
     Consume(TokenType.LEFT_BRACE, $"Expect '{{' before {kind} body.");
 
     var body = Block();
-    
+
     return new Stmt.Function(name, parameters, body);
   }
 
@@ -556,17 +556,11 @@ public class Parser
     if (Match(TokenType.TRUE)) return new Expr.Literal(true);
     if (Match(TokenType.NIL)) return new Expr.Literal(null!);
 
-    if (Match(TokenType.NUMBER, TokenType.STRING))
-    {
-      var token = Previous();
-      return new Expr.Literal(token.Literal!);
-    }
+    if (Match(TokenType.NUMBER, TokenType.STRING)) return new Expr.Literal(Previous().Literal!);
 
-    if (Match(TokenType.IDENTIFIER))
-    {
-      var name = Previous();
-      return new Expr.Variable(name);
-    }
+    if (Match(TokenType.THIS)) return new Expr.This(Previous());
+
+    if (Match(TokenType.IDENTIFIER)) return new Expr.Variable(Previous());
 
     if (Match(TokenType.LEFT_PAREN))
     {

@@ -16,6 +16,13 @@ public class LxInstance(LxClass baseClass)
         return _fields[name.Lexeme];
       }
 
+      var method = baseClass.FindMethod(name.Lexeme);
+
+      if (method is not null)
+      {
+        return method.Bind(this);
+      }
+
       throw new LxRuntimeException($"Undefined property '{name.Lexeme}'.", name);
     }
 

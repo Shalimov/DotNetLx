@@ -91,7 +91,12 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
   public ExecutionResult Visit(Stmt.Class clsDecl)
   {
     _environment.Define(clsDecl.Name.Lexeme, null);
-    var lxClass = new LxClass(clsDecl.Name.Lexeme);
+
+    var methods = clsDecl.Methods.ToDictionary(
+      method => method.Name.Lexeme,
+      method => new LxFunction(method, _environment));
+
+    var lxClass = new LxClass(clsDecl.Name.Lexeme, methods);
     _environment.Assign(clsDecl.Name, lxClass);
 
     return ExecutionResult.Normal;
@@ -103,7 +108,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     return ExecutionResult.Normal;
   }
-  
+
   public ExecutionResult Visit(Stmt.Var varDecl)
   {
     _environment.Define(varDecl.Name.Lexeme);
@@ -177,7 +182,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
       {
         var leftStr = leftValue ?? "nil";
         var rightStr = rightValue ?? "nil";
-        
+
         return leftStr.ToString() + rightStr.ToString();
       }
 
@@ -320,6 +325,8 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     throw new LxRuntimeException("Only classes or functions are callable.", expr.TraceParen);
   }
 
+  public object? Visit(Expr.This expr) => LookupVariable(expr.Keyword, expr);
+  
   public object? Visit(Expr.Variable expr) => LookupVariable(expr.Name, expr);
 
   public object? Visit(Expr.Assign expr)

@@ -28,6 +28,21 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     Declare(clsStmt.Name);
     Define(clsStmt.Name);
 
+    BeginScope();
+
+    var thisToken = new Token(TokenType.THIS, "this", null, clsStmt.Name.Line, clsStmt.Name.Column);
+    
+    Declare(thisToken);
+    Define(thisToken);
+
+    foreach (var method in clsStmt.Methods)
+    {
+      var declarationType = SymanticEnvironmentFlags.Method;
+      ResolveFunction(method, declarationType);
+    }
+
+    EndScope();
+
     return default!; 
   }
 
@@ -88,7 +103,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Stmt.Break stmt)
   {
-    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Loop) != SymanticEnvironmentFlags.Loop)
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Loop) == SymanticEnvironmentFlags.None)
     {
       DotNetLx.ReportError(stmt.Keyword, "Statment 'break' is not allowed outside of a loop's body.");
     }
@@ -98,7 +113,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Stmt.Return stmt)
   {
-    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Function) != SymanticEnvironmentFlags.Function)
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.Callable) == SymanticEnvironmentFlags.None)
     {
       DotNetLx.ReportError(stmt.Keyword, "Can't return from top-level code.");
     }
@@ -197,6 +212,14 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
+  public ValueType Visit(Expr.This expr)
+  {
+    MarkAsUsed(expr.Keyword);
+    ResolveLocal(expr, expr.Keyword);
+
+    return default!;
+  }
+
   public ValueType Visit(Expr.Lambda expr)
   {
     ResolveFunction(new Stmt.Function(expr.Name, expr.Parameters, expr.Body), SymanticEnvironmentFlags.Function);
@@ -215,7 +238,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
       DotNetLx.ReportError(expr.Name, "Can't read local variable in its own initializer.");
     }
 
-    MarkAsUsed(expr);
+    MarkAsUsed(expr.Name);
     ResolveLocal(expr, expr.Name);
 
     return default!;
@@ -241,13 +264,11 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     }
   }
 
-  private void MarkAsUsed(Expr.Variable expr)
+  private void MarkAsUsed(Token identifier)
   {
-    var name = expr.Name;
-
     foreach (var scope in _scopes)
     {
-      if (scope.Variables.TryGetValue(name, out var variableSymanticMeta))
+      if (scope.Variables.TryGetValue(identifier, out var variableSymanticMeta))
       {
         variableSymanticMeta.IsUsed = true;
         break;

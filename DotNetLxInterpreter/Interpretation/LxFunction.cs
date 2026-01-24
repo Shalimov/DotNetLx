@@ -15,6 +15,14 @@ public class LxFunction : ILxCallable
 
   public int Arity => _function.Parameters.Count;
 
+  public LxFunction Bind(LxInstance instance)
+  {
+    var enclosing = new Environment(_clousre);
+    enclosing.Define("this", instance);
+
+    return new LxFunction(_function, enclosing);
+  }
+
   public object? Call(IInterpreter interpreter, IEnumerable<object?> arguments)
   {
     var environment = new Environment(_clousre);
