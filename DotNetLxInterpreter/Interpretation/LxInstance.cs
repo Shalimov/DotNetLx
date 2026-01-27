@@ -3,9 +3,15 @@ using DotNetLxInterpreter.Exceptions;
 
 namespace DotNetLxInterpreter.Interpretation;
 
-public class LxInstance(LxClass baseClass)
+public class LxInstance
 {
+  private readonly LxClass? _baseClass;
   private readonly Dictionary<string, object?> _fields = new ();
+
+  public LxInstance(LxClass? baseClass)
+  {
+    _baseClass = baseClass;
+  }
 
   public object? this[Token name]
   {
@@ -16,7 +22,7 @@ public class LxInstance(LxClass baseClass)
         return _fields[name.Lexeme];
       }
 
-      var method = baseClass.FindMethod(name.Lexeme);
+      var method = _baseClass?.FindMethod(name.Lexeme);
 
       if (method is not null)
       {
@@ -32,5 +38,5 @@ public class LxInstance(LxClass baseClass)
     }
   }
 
-  public override string ToString() => $"{baseClass.Name} Instance";
+  public override string ToString() => $"{_baseClass?.Name ?? "Metaclass"} Instance";
 }

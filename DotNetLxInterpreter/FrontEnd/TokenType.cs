@@ -51,6 +51,7 @@ public enum TokenType
     VAR,
     WHILE,
     BREAK,
+    STATIC,
 
     // Termination
     EOF

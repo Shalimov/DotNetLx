@@ -1,9 +1,22 @@
 namespace DotNetLxInterpreter.Interpretation;
 
-public class LxClass(string name, Dictionary<string, LxFunction> methods) : ILxCallable
+public class LxClass : LxInstance, ILxCallable
 {
-  private readonly Dictionary<string, LxFunction> _methods = methods;
-  public string Name => name;
+  private readonly string _name;
+  private readonly Dictionary<string, LxFunction> _methods;
+  
+  public LxClass(string name, Dictionary<string, LxFunction> methods) : this(null!, name, methods)
+  {
+    
+  }
+
+  public LxClass(LxClass baseClass, string name, Dictionary<string, LxFunction> methods) : base(baseClass)
+  {
+    _name = name;
+    _methods = methods;
+  }
+
+  public string Name => _name;
 
   public int Arity
   {
@@ -34,5 +47,5 @@ public class LxClass(string name, Dictionary<string, LxFunction> methods) : ILxC
     return instance;
   }
 
-  public override string ToString() => name;
+  public override string ToString() => _name;
 }

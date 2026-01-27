@@ -95,8 +95,14 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     var methods = clsDecl.Methods.ToDictionary(
       method => method.Name.Lexeme,
       method => new LxFunction(method, _environment, method.Name.Lexeme.Equals("init")));
+    
+    var staticMethods = clsDecl.StaticMethods.ToDictionary(
+      method => method.Name.Lexeme,
+      method => new LxFunction(method, _environment, isInitializer: false));
 
-    var lxClass = new LxClass(clsDecl.Name.Lexeme, methods);
+    var metaClass = new LxClass("Metaclass", staticMethods);
+    var lxClass = new LxClass(metaClass, clsDecl.Name.Lexeme, methods);
+    
     _environment.Assign(clsDecl.Name, lxClass);
 
     return ExecutionResult.Normal;

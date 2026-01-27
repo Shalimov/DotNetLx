@@ -20,7 +20,8 @@ public class Scanner(string source)
         { "or", TokenType.OR },
         { "false", TokenType.FALSE },
         { "true", TokenType.TRUE },
-        { "var", TokenType.VAR }
+        { "var", TokenType.VAR },
+        { "static", TokenType.STATIC }
     };
 
     private readonly string _source = source;

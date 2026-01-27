@@ -1,4 +1,8 @@
 class WeAreLegion {
+  static init(x, y) {
+    return this.mass + x + y;
+  }
+
   sayMyName() {
     print "Hey, here is my name: " + this;
   } 
@@ -19,3 +23,7 @@ print "It weilds: " + legionInstance.weapon;
 print "I'm imortal HP: " + legionInstance.health; 
 
 legionInstance.sayMyName();
+
+WeAreLegion.mass = 100;
+
+print "Static method of Mass [130]: " + WeAreLegion.init(10, 20);

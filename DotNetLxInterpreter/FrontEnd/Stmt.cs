@@ -21,11 +21,13 @@ namespace DotNetLxInterpreter.FrontEnd
         {
             public Token Name { get; set; }
             public List<Function> Methods { get; set; }
+            public List<Function> StaticMethods { get; set; }
 
-            public Class(Token name, List<Function> methods)
+            public Class(Token name, List<Function> methods, List<Function> staticmethods)
             {
                 Name = name;
                 Methods = methods;
+                StaticMethods = staticmethods;
             }
 
             public override TR Accept<TR>(IVisitorStmt<TR> visitor)

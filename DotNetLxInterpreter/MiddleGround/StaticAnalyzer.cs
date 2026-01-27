@@ -47,6 +47,11 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
       ResolveFunction(method, declarationType);
     }
 
+    foreach (var stMethod in clsStmt.StaticMethods)
+    {
+      ResolveFunction(stMethod, SymanticEnvironmentFlags.Method);
+    }
+
     EndScope();
 
     _symanticEnvFlags = enclosingSurroundings;
