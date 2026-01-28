@@ -1,7 +1,7 @@
 using DotNetLxInterpreter.FrontEnd;
 using DotNetLxInterpreter.Exceptions;
 
-namespace DotNetLxInterpreter.Interpretation;
+namespace DotNetLxInterpreter.Interpretation.LangAbstractions;
 
 public class LxInstance
 {

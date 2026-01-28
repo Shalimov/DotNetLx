@@ -2,6 +2,7 @@ using System.Collections;
 using DotNetLxInterpreter.FrontEnd;
 using DotNetLxInterpreter.Exceptions;
 using DotNetLxInterpreter.Interpretation.NativeFunctions;
+using DotNetLxInterpreter.Interpretation.LangAbstractions;
 using static DotNetLxInterpreter.Interpretation.LxRuntimeAssertions;
 
 namespace DotNetLxInterpreter.Interpretation;
@@ -92,17 +93,22 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
   {
     _environment.Define(clsDecl.Name.Lexeme, null);
 
-    var methods = clsDecl.Methods.ToDictionary(
-      method => method.Name.Lexeme,
-      method => new LxFunction(method, _environment, method.Name.Lexeme.Equals("init")));
-    
     var staticMethods = clsDecl.StaticMethods.ToDictionary(
       method => method.Name.Lexeme,
-      method => new LxFunction(method, _environment, isInitializer: false));
+      method => new LxFunction(method, _environment, new LxFunctionMeta()));
+
+    var methods = clsDecl.Methods.ToDictionary(
+      method => method.Name.Lexeme,
+      method => new LxFunction(method, _environment, new LxFunctionMeta { IsInitializer = method.Name.Lexeme.Equals("init") }));
+
+    foreach (var getter in clsDecl.Properties)
+    {
+      methods.Add(getter.Name.Lexeme, new LxFunction(getter, _environment, new LxFunctionMeta() { IsProperty = true }));
+    }
 
     var metaClass = new LxClass("Metaclass", staticMethods);
     var lxClass = new LxClass(metaClass, clsDecl.Name.Lexeme, methods);
-    
+
     _environment.Assign(clsDecl.Name, lxClass);
 
     return ExecutionResult.Normal;
@@ -110,7 +116,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
   public ExecutionResult Visit(Stmt.Function funDecl)
   {
-    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl, _environment, isInitializer: false));
+    _environment.Define(funDecl.Name.Lexeme, new LxFunction(funDecl, _environment, new LxFunctionMeta()));
 
     return ExecutionResult.Normal;
   }
@@ -307,7 +313,16 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     if (target is LxInstance lxInstance)
     {
-      return lxInstance[expr.Name];
+      var instanceValue = lxInstance[expr.Name];
+
+      if (instanceValue is LxFunction instanceMethod && instanceMethod.Meta.IsProperty)
+      {
+        return instanceMethod.Call(this, []);
+      }
+      else
+      {
+        return instanceValue;
+      }
     }
 
     throw new LxRuntimeException("Only instances can have fields.", expr.Name);
@@ -332,7 +347,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
   }
 
   public object? Visit(Expr.This expr) => LookupVariable(expr.Keyword, expr);
-  
+
   public object? Visit(Expr.Variable expr) => LookupVariable(expr.Name, expr);
 
   public object? Visit(Expr.Assign expr)
@@ -350,7 +365,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return value;
   }
 
-  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(lambda.Name, lambda.Parameters, lambda.Body), _environment, isInitializer: false);
+  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(lambda.Name, lambda.Parameters, lambda.Body), _environment, new LxFunctionMeta());
 
   #endregion
 

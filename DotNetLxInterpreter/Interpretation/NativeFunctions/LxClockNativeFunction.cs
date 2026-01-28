@@ -1,3 +1,5 @@
+using DotNetLxInterpreter.Interpretation.LangAbstractions;
+
 namespace DotNetLxInterpreter.Interpretation.NativeFunctions;
 
 public class LxClockNativeFunction : ILxCallable

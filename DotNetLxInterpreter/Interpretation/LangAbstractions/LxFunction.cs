@@ -1,18 +1,18 @@
 using DotNetLxInterpreter.FrontEnd;
 
-namespace DotNetLxInterpreter.Interpretation;
+namespace DotNetLxInterpreter.Interpretation.LangAbstractions;
 
 public class LxFunction : ILxCallable
 {
   private readonly Stmt.Function _function;
   private readonly Environment _clousre;
-  private readonly bool _isInitializer;
+  public LxFunctionMeta Meta { get; }
 
-  public LxFunction(Stmt.Function function, Environment clousre, bool isInitializer)
+  public LxFunction(Stmt.Function function, Environment clousre, LxFunctionMeta meta)
   {
     _function = function;
     _clousre = clousre;
-    _isInitializer = isInitializer;
+    Meta = meta;
   }
 
   public int Arity => _function.Parameters.Count;
@@ -22,7 +22,7 @@ public class LxFunction : ILxCallable
     var enclosing = new Environment(_clousre);
     enclosing.Define("this", instance);
 
-    return new LxFunction(_function, enclosing, _isInitializer);
+    return new LxFunction(_function, enclosing, Meta);
   }
 
   public object? Call(IInterpreter interpreter, IEnumerable<object?> arguments)
@@ -36,7 +36,7 @@ public class LxFunction : ILxCallable
 
     var executionResult = interpreter.ExecuteBlock(_function.Body, environment);
 
-    if (_isInitializer)
+    if (Meta.IsInitializer)
     {
       return _clousre.GetAt(0, 0, new Token(TokenType.THIS, "this", null, _function.Name.Line, _function.Name.Column));
     }

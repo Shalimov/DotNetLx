@@ -1,4 +1,4 @@
-namespace DotNetLxInterpreter.Interpretation;
+namespace DotNetLxInterpreter.Interpretation.LangAbstractions;
 
 public interface ILxCallable
 {

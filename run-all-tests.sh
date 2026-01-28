@@ -69,6 +69,7 @@ echo "  • return-statement-*.lx                   - Validates return statement
 echo "  • self-init-*.lx                          - Detects self-referential variable initialization"
 echo "  • this-outside-class-*.lx                 - Validates 'this' usage only inside class methods"
 echo "  • class-init-*.lx                         - Tests class initializer behavior (constructor, return)"
+echo "  • class-property-*.lx                     - Tests class property edge cases (no return, name collision)"
 echo "  • lexical-scope-variable-extraction.lx    - Tests complex scope extraction"
 echo "  • function-inside-*.lx                    - Tests functions within loops/assignments"
 echo ""

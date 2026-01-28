@@ -1,0 +1,44 @@
+// Edge case: Property without return statement
+// Expected: Should pass, property returns nil
+
+class Counter {
+  init() {
+    this.count = 0;
+  }
+
+  // Property with return - normal case
+  value {
+    return this.count;
+  }
+
+  // Property without return - should return nil
+  nothing {
+    this.count = this.count + 1;
+    // No return statement - implicitly returns nil
+  }
+
+  // Property with side effect only
+  increment {
+    this.count = this.count + 10;
+    // Side effect only, no explicit return
+  }
+}
+
+var c = Counter();
+
+print "Initial count: " + c.value;
+
+// Call property that has no return
+var result1 = c.nothing;
+print "After nothing (count is now 1): " + c.value;
+print "nothing returned: " + result1;
+
+// Call again
+var result2 = c.nothing;
+print "After nothing again (count is now 2): " + c.value;
+print "nothing returned: " + result2;
+
+// Call increment property (no return)
+var result3 = c.increment;
+print "After increment (count is now 12): " + c.value;
+print "increment returned: " + result3;

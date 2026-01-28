@@ -41,7 +41,7 @@ public class Parser
     try
     {
       if (Match(TokenType.CLASS)) return ClassDecl();
-      if (Match(TokenType.FUN)) return FunDecl("function");
+      if (Match(TokenType.FUN)) return FunDecl();
       if (Match(TokenType.VAR)) return VarDecl();
 
       return Statement();
@@ -60,29 +60,52 @@ public class Parser
 
     Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
+    List<Stmt.Function> properties = [];
     List<Stmt.Function> methods = [];
     List<Stmt.Function> staticMethods = [];
 
     while (!(Check(TokenType.RIGHT_BRACE) || IsAtEnd()))
     {
-      if (Match(TokenType.STATIC))
+      var method = (Stmt.Function)MethodDecl(out var isStatic, out var isProperty);
+
+      if (isProperty)
       {
-        staticMethods.Add((Stmt.Function)FunDecl("static method"));
+          properties.Add(method);
+      }
+      else if (isStatic)
+      {
+        staticMethods.Add(method);
       }
       else
       {
-        methods.Add((Stmt.Function)FunDecl("method"));
+        methods.Add(method);
       }
     }
 
     Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
 
-    return new Stmt.Class(name, methods, staticMethods);
+    return new Stmt.Class(name, properties, methods, staticMethods);
   }
 
-  private Stmt FunDecl(string kind)
+  private Stmt MethodDecl(out bool isStatic, out bool isProperty)
   {
-    var name = Consume(TokenType.IDENTIFIER, $"Expected name to be defined for a {kind} declaration.");
+    isStatic = Match(TokenType.STATIC);
+
+    var name = Consume(TokenType.IDENTIFIER, $"Expected name to be defined for a method or property declaration.");
+
+    if (Match(TokenType.LEFT_BRACE))
+    {
+      if (isStatic)
+      {
+        Error(name, "Class properties can't be static.");
+      }
+
+      var propBody = Block();
+
+      isProperty = true;
+
+      return new Stmt.Function(name, [], propBody);
+    }
 
     Consume(TokenType.LEFT_PAREN, "Expect '(' before parameters definition.");
 
@@ -99,7 +122,35 @@ public class Parser
     }
 
     Consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters definition.");
-    Consume(TokenType.LEFT_BRACE, $"Expect '{{' before {kind} body.");
+    Consume(TokenType.LEFT_BRACE, $"Expect '{{' before method body.");
+
+    var methodBody = Block();
+
+    isProperty = false;
+
+    return new Stmt.Function(name, parameters, methodBody);
+  }
+
+  private Stmt FunDecl()
+  {
+    var name = Consume(TokenType.IDENTIFIER, $"Expected name to be defined for a function declaration.");
+
+    Consume(TokenType.LEFT_PAREN, "Expect '(' before parameters definition.");
+
+    List<Token> parameters = [];
+
+    if (!Check(TokenType.RIGHT_PAREN)) do
+    {
+      parameters.Add(Consume(TokenType.IDENTIFIER, "Expect parameter name."));
+    } while (Match(TokenType.COMMA));
+
+    if (parameters.Count >= MAX_FUNCTION_PARAMS_COUNT)
+    {
+      Error(Peek(), $"Can't have more than {MAX_FUNCTION_PARAMS_COUNT} parameters.");
+    }
+
+    Consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters definition.");
+    Consume(TokenType.LEFT_BRACE, $"Expect '{{' before function body.");
 
     var body = Block();
 

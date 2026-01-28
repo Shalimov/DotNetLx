@@ -52,6 +52,16 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
       ResolveFunction(stMethod, SymanticEnvironmentFlags.Method);
     }
 
+    foreach (var property in clsStmt.Properties)
+    {
+      if (clsStmt.Methods.Any(m => m.Name == property.Name))
+      {
+        DotNetLx.ReportError(property.Name, $"Class property '{property.Name.Lexeme}' cannot have the same name as a method.");
+      }
+
+      ResolveFunction(property, SymanticEnvironmentFlags.Method);
+    }
+
     EndScope();
 
     _symanticEnvFlags = enclosingSurroundings;

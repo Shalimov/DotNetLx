@@ -5,11 +5,13 @@ declaration    -> classDecl
                 | funDecl
                 | statement ;
 
-classDecl      -> "class" IDENTIFIER "{" ( "static" function )* "}" ;
+classDecl      -> "class" IDENTIFIER "{" ( "static"? function | property )* "}" ;
 
 varDecl        -> "var" IDENTIFIER ( "=" expression )? ";" ;
 
 funDecl        -> "fun" function ;
+
+property       -> IDENTIFIER blockStmt ;
 
 function       -> IDENTIFIER "(" parameters? ")" blockStmt ;
 parameters     -> IDENTIFIER ( "," IDENTIFIER )* ;

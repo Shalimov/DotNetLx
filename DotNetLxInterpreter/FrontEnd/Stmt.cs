@@ -20,12 +20,14 @@ namespace DotNetLxInterpreter.FrontEnd
         public class Class : Stmt
         {
             public Token Name { get; set; }
+            public List<Function> Properties { get; set; }
             public List<Function> Methods { get; set; }
             public List<Function> StaticMethods { get; set; }
 
-            public Class(Token name, List<Function> methods, List<Function> staticmethods)
+            public Class(Token name, List<Function> properties, List<Function> methods, List<Function> staticmethods)
             {
                 Name = name;
+                Properties = properties;
                 Methods = methods;
                 StaticMethods = staticmethods;
             }

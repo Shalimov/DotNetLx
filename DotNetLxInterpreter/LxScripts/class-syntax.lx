@@ -1,4 +1,14 @@
 class WeAreLegion {
+  init() {
+    this.name = "Legion of 1000 suns";
+    this.weapon = "Golden Axe";
+    this.health = 10000000;
+  }
+
+  hp {
+    return this.health + "hp";
+  }
+
   static init(x, y) {
     return this.mass + x + y;
   }
@@ -14,13 +24,9 @@ var legionInstance = WeAreLegion();
 
 print "Legion is here: " + legionInstance;
 
-legionInstance.name = "1000 Suns";
-legionInstance.weapon = "golden axe";
-legionInstance.health = 1000000;
-
-print "Name of it: " + legionInstance.name;
-print "It weilds: " + legionInstance.weapon;
-print "I'm imortal HP: " + legionInstance.health; 
+print "Name of it : " + legionInstance.name;
+print "It weilds : " + legionInstance.weapon;
+print "I'm imortal almost : " + legionInstance.hp; 
 
 legionInstance.sayMyName();
 

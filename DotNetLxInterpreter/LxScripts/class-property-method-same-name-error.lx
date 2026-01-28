@@ -1,0 +1,22 @@
+// Edge case: Method and property have the same name
+// Expected: Static analyzer should report an error
+
+class Person {
+  init() {
+    this.internalName = "John";
+  }
+
+  // This is a property (no parentheses)
+  name {
+    return this.internalName;
+  }
+
+  // This is a method with the same name as the property above
+  // This should cause an error
+  name() {
+    return "Method: " + this.internalName;
+  }
+}
+
+var person = Person();
+print person.name;
