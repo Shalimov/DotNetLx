@@ -28,6 +28,16 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     Declare(clsStmt.Name);
     Define(clsStmt.Name);
 
+    if (clsStmt.SuperClass is not null)
+    {
+      if (clsStmt.Name.Equals(clsStmt.SuperClass.Name))
+      {
+        DotNetLx.ReportError(clsStmt.SuperClass.Name, "A class cannot inherit from itself.");
+      }
+
+      Resolve(clsStmt.SuperClass);
+    }
+
     var enclosingSurroundings = _symanticEnvFlags;
     _symanticEnvFlags |= SymanticEnvironmentFlags.Class;
 
@@ -37,6 +47,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     Declare(thisToken);
     Define(thisToken);
+    MarkAsUsed(thisToken);
 
     foreach (var method in clsStmt.Methods)
     {
@@ -248,7 +259,6 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
       return default!;
     }
 
-    MarkAsUsed(expr.Keyword);
     ResolveLocal(expr, expr.Keyword);
 
     return default!;

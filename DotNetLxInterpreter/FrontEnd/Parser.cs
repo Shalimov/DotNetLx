@@ -57,6 +57,13 @@ public class Parser
   private Stmt ClassDecl()
   {
     var name = Consume(TokenType.IDENTIFIER, "Expected class name.");
+    Expr.Variable? superclass = null;
+
+    if (Match(TokenType.LESS))
+    {
+      var superClassName = Consume(TokenType.IDENTIFIER, "Expect superclass name.");
+      superclass = new Expr.Variable(superClassName);
+    }
 
     Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
@@ -84,7 +91,7 @@ public class Parser
 
     Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
 
-    return new Stmt.Class(name, properties, methods, staticMethods);
+    return new Stmt.Class(name, superclass, properties, methods, staticMethods);
   }
 
   private Stmt MethodDecl(out bool isStatic, out bool isProperty)

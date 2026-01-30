@@ -1,0 +1,16 @@
+class AbstractBuffer {
+  pull() {
+    print "Pull";
+  }
+
+  push() {
+    print "Push";
+  }
+}
+
+class ChildBuffer < AbstractBuffer {}
+
+var example1 = ChildBuffer();
+
+example1.pull();
+example1.push();

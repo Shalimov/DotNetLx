@@ -3,17 +3,19 @@ namespace DotNetLxInterpreter.Interpretation.LangAbstractions;
 public class LxClass : LxInstance, ILxCallable
 {
   private readonly string _name;
+  private readonly LxClass? _superclass;
   private readonly Dictionary<string, LxFunction> _methods;
-  
-  public LxClass(string name, Dictionary<string, LxFunction> methods) : this(null!, name, methods)
+
+  public static LxClass MetaClass(Dictionary<string, LxFunction> methods)
   {
-    
+    return new LxClass(null!, "Metaclass", null, methods);
   }
 
-  public LxClass(LxClass baseClass, string name, Dictionary<string, LxFunction> methods) : base(baseClass)
+  public LxClass(LxClass metaclass, string name, LxClass? superclass, Dictionary<string, LxFunction> methods) : base(metaclass)
   {
     _name = name;
     _methods = methods;
+    _superclass = superclass;
   }
 
   public string Name => _name;
@@ -34,7 +36,7 @@ public class LxClass : LxInstance, ILxCallable
       return _methods[name];
     }
 
-    return null;
+    return _superclass?.FindMethod(name);
   }
 
   public object? Call(IInterpreter interpreter, IEnumerable<object?> arguments)

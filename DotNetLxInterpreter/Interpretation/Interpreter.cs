@@ -91,6 +91,18 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
   public ExecutionResult Visit(Stmt.Class clsDecl)
   {
+    object? superclass = null;
+
+    if (clsDecl.SuperClass is not null)
+    {
+      superclass = Evaluate(clsDecl.SuperClass);
+
+      if (superclass is not LxClass)
+      {
+        throw new LxRuntimeException("A superclass must be a class.", clsDecl.SuperClass.Name);
+      }
+    }
+
     _environment.Define(clsDecl.Name.Lexeme, null);
 
     var staticMethods = clsDecl.StaticMethods.ToDictionary(
@@ -106,8 +118,11 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
       methods.Add(getter.Name.Lexeme, new LxFunction(getter, _environment, new LxFunctionMeta() { IsProperty = true }));
     }
 
-    var metaClass = new LxClass("Metaclass", staticMethods);
-    var lxClass = new LxClass(metaClass, clsDecl.Name.Lexeme, methods);
+    var lxClass = new LxClass(
+      LxClass.MetaClass(staticMethods),
+      clsDecl.Name.Lexeme,
+      superclass as LxClass, 
+      methods);
 
     _environment.Assign(clsDecl.Name, lxClass);
 
