@@ -1,6 +1,7 @@
 # Language Reference
 
 See [docs/lx-language-ref.md](docs/lx-language-ref.md) for the full specification.
+Examples and test scripts live in `DotNetLxInterpreter/LxScripts`.
 
 | Feature | Notes |
 | --- | --- |

@@ -166,3 +166,54 @@ b.greet();
 - Division by zero is a runtime error.
 - Calling non-callables is a runtime error.
 - Accessing unknown fields on instances is a runtime error.
+
+**End-to-End Example**
+```lx
+class Creature {
+  init(name) {
+    this.name = name;
+    this.energy = 10;
+  }
+
+  status {
+    return this.name + ":" + this.energy;
+  }
+
+  act() {
+    this.energy = this.energy - 1;
+    return this.energy;
+  }
+}
+
+class Beast < Creature {
+  act() {
+    var remaining = super.act();
+    return remaining > 5 ? "wild" : "tired";
+  }
+}
+
+class DireBeast < Beast {
+  roar() {
+    print "ROAR";
+  }
+
+  static spawn(name) {
+    return DireBeast(name);
+  }
+}
+
+var b = DireBeast.spawn("Fen");
+print b.status;        // getter
+print b.act();
+print b.act();
+print b.act();
+
+fun times(n, fn) {
+  for (var i = 0; i < n; i = i + 1) fn(i);
+}
+
+times(3, fun (i) print i + ":" + b.status);
+
+print (1, 2, 3);        // comma operator returns 3
+print "tick " + clock();
+```
