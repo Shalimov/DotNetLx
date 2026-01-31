@@ -1,3 +1,5 @@
+print "Example 1";
+
 class AbstractBuffer {
   pull() {
     print "Pull";
@@ -8,9 +10,42 @@ class AbstractBuffer {
   }
 }
 
-class ChildBuffer < AbstractBuffer {}
+class ChildBuffer < AbstractBuffer {
+  push() {
+    print "Zwischen zwei";
+    super.push();
+    print "Push and try";
+  }
+}
 
 var example1 = ChildBuffer();
 
 example1.pull();
 example1.push();
+
+print "Example 2: Correct resolution of super";
+
+class A {
+  method() {
+    print "Walking alone in A";
+  }
+}
+
+class B < A {
+  method() {
+    print "Cover A in the shadows";
+  }
+
+  thruShadows() {
+    super.method();
+  }
+}
+
+class C < B {
+
+}
+
+var check = C();
+
+// Should print "Walking alone in A";
+check.thruShadows();

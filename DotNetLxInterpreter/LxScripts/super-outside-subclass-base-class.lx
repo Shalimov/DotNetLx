@@ -1,0 +1,13 @@
+// Super Outside Subclass - Base Class Without Parent Error
+// Should trigger: "A usage of 'super' is forbidden outside of sub-classes."
+
+print "This should not execute - static analyzer should catch the error";
+
+class BaseClass {
+  method() {
+    print super.someMethod(); // ERROR: 'super' used in a class without a superclass
+  }
+}
+
+var obj = BaseClass();
+obj.method();

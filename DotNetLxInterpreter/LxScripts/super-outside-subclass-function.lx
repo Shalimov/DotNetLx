@@ -1,0 +1,10 @@
+// Super Outside Subclass - Inside Regular Function Error
+// Should trigger: "A usage of 'super' is forbidden outside of sub-classes."
+
+print "This should not execute - static analyzer should catch the error";
+
+fun notAMethod() {
+  print super.someMethod(); // ERROR: 'super' used inside a regular function, not a method
+}
+
+notAMethod();

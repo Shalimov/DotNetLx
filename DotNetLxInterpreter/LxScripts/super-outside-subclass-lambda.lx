@@ -1,0 +1,10 @@
+// Super Outside Subclass - Inside Lambda Error
+// Should trigger: "A usage of 'super' is forbidden outside of sub-classes."
+
+print "This should not execute - static analyzer should catch the error";
+
+var lambda = fun () {
+  return super.someMethod(); // ERROR: 'super' used inside a lambda, not in a subclass method
+};
+
+lambda();

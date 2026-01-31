@@ -59,6 +59,7 @@ unary          -> ( "!" | "-" ) unary | call ;
 call           -> primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 arguments      -> assignment ( "," assignment )* ;
 
-primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda ;
+primary        -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda | super ;
 
+super          -> "super" "." IDENTIFIER ;
 lambda         -> "fun" "(" parameters? ")" ( blockStmt | expression ) ;

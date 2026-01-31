@@ -1,0 +1,17 @@
+// Super Nonexistent Method - Runtime Error
+// Should trigger runtime error: "Superclass has no such method 'nonExistentMethod'."
+
+class Parent {
+  existingMethod() {
+    print "This is a valid parent method";
+  }
+}
+
+class Child < Parent {
+  testMethod() {
+    super.nonExistentMethod(); // RUNTIME ERROR: method doesn't exist on superclass
+  }
+}
+
+var obj = Child();
+obj.testMethod();

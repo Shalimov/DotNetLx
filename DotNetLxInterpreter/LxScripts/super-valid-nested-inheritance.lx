@@ -1,0 +1,43 @@
+// Super Valid - Nested Inheritance Chain
+// Valid usage: super in multi-level inheritance (GrandParent -> Parent -> Child)
+
+class GrandParent {
+  greet() {
+    print "GrandParent greet";
+  }
+  
+  level() {
+    return "GrandParent";
+  }
+}
+
+class Parent < GrandParent {
+  greet() {
+    print "Parent greet";
+    super.greet(); // Calls GrandParent.greet
+  }
+  
+  level() {
+    var parentLevel = super.level();
+    print "Parent level, super is: " + parentLevel;
+    return "Parent";
+  }
+}
+
+class Child < Parent {
+  greet() {
+    print "Child greet";
+    super.greet(); // Calls Parent.greet, which calls GrandParent.greet
+  }
+  
+  level() {
+    var parentLevel = super.level(); // Calls Parent.level, which calls GrandParent.level
+    print "Child level, super is: " + parentLevel;
+    return "Child";
+  }
+}
+
+var obj = Child();
+obj.greet();
+print "---";
+obj.level();

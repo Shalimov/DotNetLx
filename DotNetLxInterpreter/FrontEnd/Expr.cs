@@ -15,6 +15,7 @@ namespace DotNetLxInterpreter.FrontEnd
             public TR Visit(Get expr);
             public TR Visit(Set expr);
             public TR Visit(This expr);
+            public TR Visit(Super expr);
             public TR Visit(Lambda expr);
             public TR Visit(Variable expr);
             public TR Visit(Assign expr);
@@ -190,6 +191,23 @@ namespace DotNetLxInterpreter.FrontEnd
             public This(Token keyword)
             {
                 Keyword = keyword;
+            }
+
+            public override TR Accept<TR>(IVisitorExpr<TR> visitor)
+            {
+                return visitor.Visit(this);
+            }
+        }
+
+        public class Super : Expr
+        {
+            public Token Keyword { get; set; }
+            public Token Method { get; set; }
+
+            public Super(Token keyword, Token method)
+            {
+                Keyword = keyword;
+                Method = method;
             }
 
             public override TR Accept<TR>(IVisitorExpr<TR> visitor)

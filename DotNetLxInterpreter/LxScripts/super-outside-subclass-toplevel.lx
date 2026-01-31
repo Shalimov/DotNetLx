@@ -1,0 +1,6 @@
+// Super Outside Subclass - Top Level Error
+// Should trigger: "A usage of 'super' is forbidden outside of sub-classes."
+
+print "This should not execute - static analyzer should catch the error";
+
+var x = super.someMethod(); // ERROR: 'super' used at top level, not inside a subclass

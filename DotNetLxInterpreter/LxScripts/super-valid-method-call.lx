@@ -1,0 +1,31 @@
+// Super Valid - Method Call in Subclass
+// Valid usage: calling superclass method from subclass method
+
+class Parent {
+  greet() {
+    print "Hello from Parent";
+  }
+  
+  calculate(x) {
+    return x * 2;
+  }
+}
+
+class Child < Parent {
+  greet() {
+    print "Hello from Child";
+    super.greet(); // Valid: calling parent's greet method
+  }
+  
+  calculate(x) {
+    var parentResult = super.calculate(x); // Valid: calling parent's calculate
+    print "Parent calculated: " + parentResult;
+    return parentResult + 10;
+  }
+}
+
+var obj = Child();
+obj.greet();
+print "---";
+var result = obj.calculate(5);
+print "Final result: " + result;

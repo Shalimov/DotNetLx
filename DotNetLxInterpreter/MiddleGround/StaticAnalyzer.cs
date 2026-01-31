@@ -28,6 +28,9 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     Declare(clsStmt.Name);
     Define(clsStmt.Name);
 
+    var enclosingSurroundings = _symanticEnvFlags;
+    _symanticEnvFlags |= SymanticEnvironmentFlags.Class;
+
     if (clsStmt.SuperClass is not null)
     {
       if (clsStmt.Name.Equals(clsStmt.SuperClass.Name))
@@ -35,19 +38,23 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
         DotNetLx.ReportError(clsStmt.SuperClass.Name, "A class cannot inherit from itself.");
       }
 
-      Resolve(clsStmt.SuperClass);
-    }
+      _symanticEnvFlags |= SymanticEnvironmentFlags.SubClass;
 
-    var enclosingSurroundings = _symanticEnvFlags;
-    _symanticEnvFlags |= SymanticEnvironmentFlags.Class;
+      Resolve(clsStmt.SuperClass);
+
+      // 'super' should reside in its own scope to be higly accessable from sub-class methods
+      // 'super' should be fixed to the context (who it points out to "situation")
+      // and should not change context of call based on the level in inheritance chain
+      BeginScope();
+
+      var superToken = new Token(TokenType.SUPER, "super", null, clsStmt.Name.Line, clsStmt.Name.Column);
+      DeclareReserved(superToken);
+    }
 
     BeginScope();
 
     var thisToken = new Token(TokenType.THIS, "this", null, clsStmt.Name.Line, clsStmt.Name.Column);
-
-    Declare(thisToken);
-    Define(thisToken);
-    MarkAsUsed(thisToken);
+    DeclareReserved(thisToken);
 
     foreach (var method in clsStmt.Methods)
     {
@@ -74,6 +81,11 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     }
 
     EndScope();
+
+    if (clsStmt.SuperClass is not null)
+    {
+      EndScope();
+    }
 
     _symanticEnvFlags = enclosingSurroundings;
 
@@ -250,6 +262,18 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     return default!;
   }
 
+  public ValueType Visit(Expr.Super expr)
+  {
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.SubClass) == SymanticEnvironmentFlags.None)
+    {
+      DotNetLx.ReportError(expr.Keyword, "A usage of 'super' is forbidden outside of sub-classes.");
+    }
+
+    ResolveLocal(expr, expr.Keyword);
+
+    return default!;
+  }
+
   public ValueType Visit(Expr.This expr)
   {
     if ((_symanticEnvFlags & SymanticEnvironmentFlags.Class) == SymanticEnvironmentFlags.None)
@@ -305,18 +329,6 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     foreach (var stmt in stmts)
     {
       Resolve(stmt);
-    }
-  }
-
-  private void MarkAsUsed(Token identifier)
-  {
-    foreach (var scope in _scopes)
-    {
-      if (scope.Variables.TryGetValue(identifier, out var variableSymanticMeta))
-      {
-        variableSymanticMeta.IsUsed = true;
-        break;
-      }
     }
   }
 
@@ -392,6 +404,29 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
     var currentScope = _scopes.Peek();
     currentScope.Variables[name].IsDefined = true;
+  }
+
+  private void MarkAsUsed(Token identifier)
+  {
+    foreach (var scope in _scopes)
+    {
+      if (scope.Variables.TryGetValue(identifier, out var variableSymanticMeta))
+      {
+        variableSymanticMeta.IsUsed = true;
+        break;
+      }
+    }
+  }
+
+  /// <summary>
+  /// Reserved words like "this", "super" are alwayes defined in appropriate contexts and can be always marked as "used".
+  /// </summary>
+  /// <param name="identifier"></param>
+  private void DeclareReserved(Token identifier)
+  {
+    Declare(identifier);
+    Define(identifier);
+    MarkAsUsed(identifier);
   }
 
   private void BeginScope()

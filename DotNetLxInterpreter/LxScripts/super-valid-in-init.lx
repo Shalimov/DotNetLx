@@ -1,0 +1,29 @@
+// Super Valid - Usage in Init Method
+// Valid usage: calling superclass init from subclass init
+
+class Parent {
+  init(name) {
+    this.name = name;
+    print "Parent initialized with name: " + name;
+  }
+  
+  describe() {
+    print "I am " + this.name;
+  }
+}
+
+class Child < Parent {
+  init(name, age) {
+    super.init(name); // Valid: calling parent's init
+    this.age = age;
+    print "Child initialized with age: " + age;
+  }
+  
+  describe() {
+    super.describe(); // Valid: calling parent's describe
+    print "And I am " + this.age + " years old";
+  }
+}
+
+var obj = Child("Alice", 25);
+obj.describe();

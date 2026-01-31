@@ -20,6 +20,7 @@ Generator.DeclareAstInFile(output, "Expr", [
         "Get        : Expr target, Token name",
         "Set        : Expr target, Token name, Expr value",
         "This       : Token keyword",
+        "Super      : Token keyword, Token method",
         "Lambda     : Token name, List<Token> parameters, List<Stmt> body",
         "Variable   : Token name",
         "Assign     : Token name, Expr value"

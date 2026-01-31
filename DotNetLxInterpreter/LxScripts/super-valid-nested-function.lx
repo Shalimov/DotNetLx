@@ -1,0 +1,23 @@
+// Super Valid - Nested Function Inside Method
+// Valid usage: super works in nested functions within subclass methods (different from 'this')
+
+class Parent {
+  parentMethod() {
+    print "Parent method";
+    return "Parent result";
+  }
+}
+
+class Child < Parent {
+  childMethod() {
+    fun nested() {
+      var result = super.parentMethod(); // Valid: super is accessible in nested function within subclass method
+      print "Nested function got: " + result;
+    }
+    print "Calling nested function...";
+    nested();
+  }
+}
+
+var obj = Child();
+obj.childMethod();

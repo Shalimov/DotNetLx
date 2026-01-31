@@ -48,7 +48,8 @@ is_expected_to_fail() {
        [[ "$filename" == "self-init-function-error.lx" ]] || \
        [[ "$filename" == "self-init-function-call-error.lx" ]] || \
        [[ "$filename" == "self-init-ternary-error.lx" ]] || \
-       [[ "$filename" == "this-outside-class-"* ]]; then
+       [[ "$filename" == "this-outside-class-"* ]] || \
+       [[ "$filename" == "super-outside-subclass-"* ]]; then
          return 0  # true - expected to fail
      fi
 
@@ -68,6 +69,7 @@ echo "  • break-outside-loop-*.lx                 - Validates break statement 
 echo "  • return-statement-*.lx                   - Validates return statement placement"
 echo "  • self-init-*.lx                          - Detects self-referential variable initialization"
 echo "  • this-outside-class-*.lx                 - Validates 'this' usage only inside class methods"
+echo "  • super-outside-subclass-*.lx             - Validates 'super' usage only inside subclass methods"
 echo "  • class-init-*.lx                         - Tests class initializer behavior (constructor, return)"
 echo "  • class-property-*.lx                     - Tests class property edge cases (no return, name collision)"
 echo "  • lexical-scope-variable-extraction.lx    - Tests complex scope extraction"

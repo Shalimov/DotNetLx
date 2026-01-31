@@ -105,6 +105,12 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     _environment.Define(clsDecl.Name.Lexeme, null);
 
+    if (clsDecl.SuperClass is not null)
+    {
+      _environment = new Environment(_environment);
+      _environment.Define("super", superclass);
+    }
+
     var staticMethods = clsDecl.StaticMethods.ToDictionary(
       method => method.Name.Lexeme,
       method => new LxFunction(method, _environment, new LxFunctionMeta()));
@@ -123,6 +129,11 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
       clsDecl.Name.Lexeme,
       superclass as LxClass, 
       methods);
+
+    if (clsDecl.SuperClass is not null)
+    {
+      _environment = _environment.Enclosing!;
+    }
 
     _environment.Assign(clsDecl.Name, lxClass);
 
@@ -361,6 +372,20 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     throw new LxRuntimeException("Only classes or functions are callable.", expr.TraceParen);
   }
 
+  public object? Visit(Expr.Super expr)
+  {
+    var distance = _locals[expr]!.Value;
+
+    var superClass = (LxClass)_environment.GetAt(distance.Level, distance.ScopeIndex, expr.Keyword)!;
+
+    var thisKeyword = new Token(TokenType.THIS, "this", null, expr.Keyword.Line, expr.Keyword.Column);
+    var thisContext = (LxInstance)_environment.GetAt(distance.Level - 1, distance.ScopeIndex, thisKeyword)!;
+
+    var method = superClass.FindMethod(expr.Method.Lexeme) ?? throw new LxRuntimeException($"Superclass has no such method {expr.Method.Lexeme}", expr.Method);
+
+    return method.Bind(thisContext);
+  }
+  
   public object? Visit(Expr.This expr) => LookupVariable(expr.Keyword, expr);
 
   public object? Visit(Expr.Variable expr) => LookupVariable(expr.Name, expr);
