@@ -371,7 +371,6 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
   public object? Visit(Expr.Call expr)
   {
-    Console.WriteLine("call expr");
     var callee = Evaluate(expr.Callee);
     var arguments = expr.Arguments.Select(Evaluate);
 
