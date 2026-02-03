@@ -28,5 +28,6 @@ Key implementation details:
 - Classes are implemented with instances, bound methods, properties as zero-arg getters, and a metaclass for statics.
 
 TODO:
+- import data from files (:import <filename.lx> in console and probably a history of commands I've run);
 - Sugar syntax for `each` loops (via iterator).
 - Conventional class properties like `[iterator]`, `[toString]`.

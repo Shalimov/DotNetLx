@@ -8,6 +8,7 @@ public enum SymanticEnvironmentFlags
   Function = 0b_0000_0010,
   Method = 0b_0000_0100,
   Initializer = 0b_0000_1000,
+  SubClassInner = 0b_0010_0000,
   SubClass = 0b_0100_0000,
   Class = 0b_1000_0000,
 

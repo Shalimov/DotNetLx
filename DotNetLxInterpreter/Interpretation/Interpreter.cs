@@ -105,6 +105,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     _environment.Define(clsDecl.Name.Lexeme, null);
 
+    // TODO: For inverted class there is no super (but there is inner: sync with Static analyzer)
     if (clsDecl.SuperClass is not null)
     {
       _environment = new Environment(_environment);
@@ -370,6 +371,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
   public object? Visit(Expr.Call expr)
   {
+    Console.WriteLine("call expr");
     var callee = Evaluate(expr.Callee);
     var arguments = expr.Arguments.Select(Evaluate);
 

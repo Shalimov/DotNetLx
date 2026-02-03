@@ -1,0 +1,32 @@
+class A {
+  templateMethod() {
+    print "Hello world";
+    inner();
+    print "Goodbye, Gordon Freeman";
+  } 
+}
+
+class B > A {
+  templateMethod() {
+    print "Looks like a challange";
+    inner();
+    print "It is a challange";
+  } 
+}
+
+
+class C > B {
+  templateMethod() {
+    print "Here is where it stops";
+  }
+}
+
+var elC = C();
+
+elC.templateMethod();
+
+// 1. print "Hello world";
+// 2. print "Looks like a challange";
+// 3. print "Here is where it stops";
+// 4. print "It is a challange";
+// 5. print "Goodbye, Gordon Freeman";

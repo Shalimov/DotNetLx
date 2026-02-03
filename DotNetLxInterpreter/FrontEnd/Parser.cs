@@ -75,9 +75,7 @@ public class Parser
 
     while (!(Check(TokenType.RIGHT_BRACE) || IsAtEnd()))
     {
-      var method = (Stmt.Function)MethodDecl();
-
-      methods.Add(method);
+      methods.Add((Stmt.Function)MethodDecl());
     }
 
     Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");

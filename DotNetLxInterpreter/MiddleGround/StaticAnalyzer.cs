@@ -38,7 +38,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
         DotNetLx.ReportError(clsStmt.SuperClass.Name, "A class cannot inherit from itself.");
       }
 
-      _symanticEnvFlags |= SymanticEnvironmentFlags.SubClass;
+      _symanticEnvFlags |= clsStmt.Modifier == ClassModifier.Inner ? SymanticEnvironmentFlags.SubClassInner : SymanticEnvironmentFlags.SubClass;
 
       Resolve(clsStmt.SuperClass);
 
@@ -270,6 +270,11 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Expr.Super expr)
   {
+    if ((_symanticEnvFlags & SymanticEnvironmentFlags.SubClassInner) == SymanticEnvironmentFlags.SubClassInner)
+    {
+      DotNetLx.ReportError(expr.Keyword, "A usage of 'super' is for inverted (inner-based) sub-classes.");
+    }
+
     if ((_symanticEnvFlags & SymanticEnvironmentFlags.SubClass) == SymanticEnvironmentFlags.None)
     {
       DotNetLx.ReportError(expr.Keyword, "A usage of 'super' is forbidden outside of sub-classes.");
