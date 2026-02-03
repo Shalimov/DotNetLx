@@ -19,19 +19,17 @@ namespace DotNetLxInterpreter.FrontEnd
 
         public class Class : Stmt
         {
+            public ClassModifier Modifier { get; set; }
             public Token Name { get; set; }
             public Expr.Variable? SuperClass { get; set; }
-            public List<Function> Properties { get; set; }
             public List<Function> Methods { get; set; }
-            public List<Function> StaticMethods { get; set; }
 
-            public Class(Token name, Expr.Variable? superclass, List<Function> properties, List<Function> methods, List<Function> staticmethods)
+            public Class(ClassModifier modifier, Token name, Expr.Variable? superclass, List<Function> methods)
             {
+                Modifier = modifier;
                 Name = name;
                 SuperClass = superclass;
-                Properties = properties;
                 Methods = methods;
-                StaticMethods = staticmethods;
             }
 
             public override TR Accept<TR>(IVisitorStmt<TR> visitor)
@@ -42,12 +40,14 @@ namespace DotNetLxInterpreter.FrontEnd
 
         public class Function : Stmt
         {
+            public FnModifier Modifier { get; set; }
             public Token Name { get; set; }
             public List<Token> Parameters { get; set; }
             public List<Stmt> Body { get; set; }
 
-            public Function(Token name, List<Token> parameters, List<Stmt> body)
+            public Function(FnModifier modifier, Token name, List<Token> parameters, List<Stmt> body)
             {
+                Modifier = modifier;
                 Name = name;
                 Parameters = parameters;
                 Body = body;

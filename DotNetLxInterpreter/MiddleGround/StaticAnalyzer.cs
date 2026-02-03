@@ -56,28 +56,34 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
     var thisToken = new Token(TokenType.THIS, "this", null, clsStmt.Name.Line, clsStmt.Name.Column);
     DeclareReserved(thisToken);
 
+    var methodNameSet = new HashSet<string>();
+
     foreach (var method in clsStmt.Methods)
     {
-      var declarationType = method.Name.Lexeme.Equals("init") ?
+      if (method.Modifier.HasFlag(FnModifier.Property) && method.Name.Lexeme.Equals("init"))
+      {
+        DotNetLx.ReportError(method.Name, $"Class property getter can not be named 'init'.");
+      }
+
+      if (methodNameSet.Contains(method.Name.Lexeme) && (method.Modifier.HasFlag(FnModifier.Property) || method.Modifier == FnModifier.None))
+      {
+        var kind = method.Modifier.HasFlag(FnModifier.Property) ? "property getter" : "method";
+
+        DotNetLx.ReportError(method.Name, $"Class {kind} with name '{method.Name.Lexeme}' is the duplicate.");
+      }
+      else
+      {
+        methodNameSet.Add(method.Name.Lexeme);
+      }
+    }
+
+    foreach (var method in clsStmt.Methods)
+    {
+      var declarationType = method.Modifier == FnModifier.None && method.Name.Lexeme.Equals("init") ?
         SymanticEnvironmentFlags.Initializer :
         SymanticEnvironmentFlags.Method;
 
       ResolveFunction(method, declarationType);
-    }
-
-    foreach (var stMethod in clsStmt.StaticMethods)
-    {
-      ResolveFunction(stMethod, SymanticEnvironmentFlags.Method);
-    }
-
-    foreach (var property in clsStmt.Properties)
-    {
-      if (clsStmt.Methods.Any(m => m.Name == property.Name))
-      {
-        DotNetLx.ReportError(property.Name, $"Class property '{property.Name.Lexeme}' cannot have the same name as a method.");
-      }
-
-      ResolveFunction(property, SymanticEnvironmentFlags.Method);
     }
 
     EndScope();
@@ -290,7 +296,7 @@ public class StaticAnalyzer : Stmt.IVisitorStmt<ValueType>, Expr.IVisitorExpr<Va
 
   public ValueType Visit(Expr.Lambda expr)
   {
-    ResolveFunction(new Stmt.Function(expr.Name, expr.Parameters, expr.Body), SymanticEnvironmentFlags.Function);
+    ResolveFunction(new Stmt.Function(FnModifier.None, expr.Name, expr.Parameters, expr.Body), SymanticEnvironmentFlags.Function);
 
     return default!;
   }

@@ -27,8 +27,8 @@ Generator.DeclareAstInFile(output, "Expr", [
     ]);
 
 Generator.DeclareAstInFile(output, "Stmt", [
-        "Class      : Token name, Expr.Variable? superClass, List<Function> properties, List<Function> methods, List<Function> staticMethods",
-        "Function   : Token name, List<Token> parameters, List<Stmt> body",
+        "Class      : ClassModifier modifier, Token name, Expr.Variable? superClass, List<Function> methods",
+        "Function   : FnModifier modifier, Token name, List<Token> parameters, List<Stmt> body",
         "Block      : List<Stmt> statements",
         "If         : Expr condition, Stmt thenBranch, Stmt? elseBranch",
         "While      : Expr condition, Stmt whileBody",

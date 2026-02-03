@@ -111,23 +111,37 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
       _environment.Define("super", superclass);
     }
 
-    var staticMethods = clsDecl.StaticMethods.ToDictionary(
-      method => method.Name.Lexeme,
-      method => new LxFunction(method, _environment, new LxFunctionMeta()));
+    Dictionary<string, LxFunction> methods = [];
+    Dictionary<string, LxFunction> staticMethods = [];
 
-    var methods = clsDecl.Methods.ToDictionary(
-      method => method.Name.Lexeme,
-      method => new LxFunction(method, _environment, new LxFunctionMeta { IsInitializer = method.Name.Lexeme.Equals("init") }));
-
-    foreach (var getter in clsDecl.Properties)
+    foreach (var method in clsDecl.Methods)
     {
-      methods.Add(getter.Name.Lexeme, new LxFunction(getter, _environment, new LxFunctionMeta() { IsProperty = true }));
+      switch (method.Modifier)
+      {
+        case FnModifier.None:
+          methods.Add(method.Name.Lexeme, new LxFunction(method, _environment, new LxFunctionMeta()
+          {
+            IsInitializer = method.Name.Lexeme.Equals("init")
+          }));
+
+          break;
+        case FnModifier.Property:
+          methods.Add(method.Name.Lexeme, new LxFunction(method, _environment, new LxFunctionMeta()
+          {
+            IsProperty = true
+          }));
+
+          break;
+        case FnModifier.Static:
+          staticMethods.Add(method.Name.Lexeme, new LxFunction(method, _environment, new LxFunctionMeta()));
+          break;
+      }
     }
 
     var lxClass = new LxClass(
       LxClass.MetaClass(staticMethods),
       clsDecl.Name.Lexeme,
-      superclass as LxClass, 
+      superclass as LxClass,
       methods);
 
     if (clsDecl.SuperClass is not null)
@@ -385,7 +399,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
 
     return method.Bind(thisContext);
   }
-  
+
   public object? Visit(Expr.This expr) => LookupVariable(expr.Keyword, expr);
 
   public object? Visit(Expr.Variable expr) => LookupVariable(expr.Name, expr);
@@ -405,7 +419,7 @@ public class Interpreter : Expr.IVisitorExpr<object?>, Stmt.IVisitorStmt<Executi
     return value;
   }
 
-  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(lambda.Name, lambda.Parameters, lambda.Body), _environment, new LxFunctionMeta());
+  public object? Visit(Expr.Lambda lambda) => new LxFunction(new Stmt.Function(FnModifier.None, lambda.Name, lambda.Parameters, lambda.Body), _environment, new LxFunctionMeta());
 
   #endregion
 

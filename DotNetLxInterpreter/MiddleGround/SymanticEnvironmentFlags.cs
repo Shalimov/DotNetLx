@@ -1,5 +1,6 @@
 namespace DotNetLxInterpreter.MiddleGround;
 
+[Flags]
 public enum SymanticEnvironmentFlags
 {
   None = 0b_0000_0000,

@@ -58,45 +58,36 @@ public class Parser
   {
     var name = Consume(TokenType.IDENTIFIER, "Expected class name.");
     Expr.Variable? superclass = null;
+    
+    var classModifier = ClassModifier.None;
 
-    if (Match(TokenType.LESS))
+    if (Match(TokenType.LESS, TokenType.GREATER))
     {
+      classModifier = Previous()?.Type == TokenType.LESS ? ClassModifier.Super : ClassModifier.Inner;
+
       var superClassName = Consume(TokenType.IDENTIFIER, "Expect superclass name.");
       superclass = new Expr.Variable(superClassName);
     }
 
     Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
-    List<Stmt.Function> properties = [];
     List<Stmt.Function> methods = [];
-    List<Stmt.Function> staticMethods = [];
 
     while (!(Check(TokenType.RIGHT_BRACE) || IsAtEnd()))
     {
-      var method = (Stmt.Function)MethodDecl(out var isStatic, out var isProperty);
+      var method = (Stmt.Function)MethodDecl();
 
-      if (isProperty)
-      {
-          properties.Add(method);
-      }
-      else if (isStatic)
-      {
-        staticMethods.Add(method);
-      }
-      else
-      {
-        methods.Add(method);
-      }
+      methods.Add(method);
     }
 
     Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
 
-    return new Stmt.Class(name, superclass, properties, methods, staticMethods);
+    return new Stmt.Class(classModifier, name, superclass, methods);
   }
 
-  private Stmt MethodDecl(out bool isStatic, out bool isProperty)
+  private Stmt MethodDecl()
   {
-    isStatic = Match(TokenType.STATIC);
+    var isStatic = Match(TokenType.STATIC);
 
     var name = Consume(TokenType.IDENTIFIER, $"Expected name to be defined for a method or property declaration.");
 
@@ -109,9 +100,7 @@ public class Parser
 
       var propBody = Block();
 
-      isProperty = true;
-
-      return new Stmt.Function(name, [], propBody);
+      return new Stmt.Function(FnModifier.Property, name, [], propBody);
     }
 
     Consume(TokenType.LEFT_PAREN, "Expect '(' before parameters definition.");
@@ -133,9 +122,9 @@ public class Parser
 
     var methodBody = Block();
 
-    isProperty = false;
+    var modifier = isStatic ? FnModifier.Static : FnModifier.None;
 
-    return new Stmt.Function(name, parameters, methodBody);
+    return new Stmt.Function(modifier, name, parameters, methodBody);
   }
 
   private Stmt FunDecl()
@@ -161,7 +150,7 @@ public class Parser
 
     var body = Block();
 
-    return new Stmt.Function(name, parameters, body);
+    return new Stmt.Function(FnModifier.None, name, parameters, body);
   }
 
   private Stmt VarDecl()
